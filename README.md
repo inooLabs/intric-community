@@ -58,10 +58,10 @@ Coming soon.
 
 ## Copyright Holders
 
-The development of this project has been partially funded by the following entities, each holding specific copyright interests in parts of the code. The parts that each of the entities hold copyright to is marked within the respective files:
+The development of this project has been partially funded by the following entities, each holding specific copyright interests in parts of the code:
 
 - **Sundsvalls Kommun**
 
-For all code where there is no marking, the copyright should be attributed to **inooLabs**.
+The parts that each of the entities hold copyright to is marked within the respective files. For all code where there is no marking, the copyright should be attributed to **inooLabs**.
 
 For any inquiries regarding usage rights, please contact jonatan.cerwall@inoolabs.com.
