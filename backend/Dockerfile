@@ -11,6 +11,7 @@ COPY /src ./src
 RUN poetry install
 
 COPY /alembic ./alembic
+COPY init_db.py alembic.ini ./
 COPY .env ./.env
 
 EXPOSE 8123
