@@ -1,0 +1,50 @@
+services:
+  intric-frontend:
+    container_name: intric-frontend
+    build: ./frontend
+    image: inoolabs/intric-frontend:v0.1
+    restart: unless-stopped
+    networks:
+      - intric
+    ports:
+      - 3000:3000
+
+  intric-backend:
+    container_name: intric-backend
+    build: ./backend
+    image: inoolabs/intric-backend:v0.1
+    restart: unless-stopped
+    networks:
+      - intric
+    ports:
+      - 8123:8123
+    environment:
+      - POSTGRES_HOST=intric-db
+      - REDIS_HOST=intric-redis
+
+  intric-db:
+    container_name: intric-db
+    image: pgvector/pgvector:pg13
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    networks:
+      - intric
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  intric-redis:
+    container_name: intric-redis
+    image: redis
+    networks:
+      - intric
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  intric:
+    name: intric
