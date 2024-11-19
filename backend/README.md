@@ -25,8 +25,8 @@
 | UPLOAD_MAX_FILE_SIZE             | x        | Max file size for uploading to a collection              |
 | TRANSCRIPTION_MAX_FILE_SIZE      | x        | Max file size for uploading to a collection              |
 | MAX_IN_QUESTION                  | x        | Max files in a question                                  |
-| USING_ACCESS_MANAGEMENT          | x        | Feature flag if using access management (example: 0)     |
-| USING_AZURE_MODELS               | x        | Feature flag if using azure models (example: 0)          |
+| USING_ACCESS_MANAGEMENT          | x        | Feature flag if using access management (example: False) |
+| USING_AZURE_MODELS               | x        | Feature flag if using azure models (example: False)      |
 | API_PREFIX                       | x        | Api prefix - eg `/api/v1/`                               |
 | API_KEY_LENGTH                   | x        | Length of the generated api keys                         |
 | API_KEY_HEADER_NAME              | x        | Header name for the api keys                             |
