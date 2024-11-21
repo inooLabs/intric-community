@@ -8,16 +8,16 @@ services:
       - intric
     ports:
       - 3000:3000
+      - 8123:8123
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   intric-backend:
     container_name: intric-backend
     build: ./backend
     image: inoolabs/intric-backend:v0.1
     restart: unless-stopped
-    networks:
-      - intric
-    ports:
-      - 8123:8123
+    network_mode: "service:intric-frontend"
     environment:
       - POSTGRES_HOST=intric-db
       - REDIS_HOST=intric-redis
