@@ -16,4 +16,4 @@ COPY .env ./.env
 
 EXPOSE 8123
 
-CMD ["poetry", "run", "start"]
+CMD poetry run python init_db.py && poetry run start

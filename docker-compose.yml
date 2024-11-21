@@ -4,20 +4,25 @@ services:
     build: ./frontend
     image: inoolabs/intric-frontend:v0.1
     restart: unless-stopped
-    networks:
-      - intric
-    ports:
-      - 3000:3000
-      - 8123:8123
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    network_mode: "service:intric-backend"
+    depends_on:
+      - intric-backend
 
   intric-backend:
     container_name: intric-backend
     build: ./backend
     image: inoolabs/intric-backend:v0.1
     restart: unless-stopped
-    network_mode: "service:intric-frontend"
+    networks:
+      - intric
+    ports:
+      - 3000:3000
+      - 8123:8123
+    depends_on:
+      intric-redis:
+        condition: service_started
+      intric-db:
+        condition: service_healthy
     environment:
       - POSTGRES_HOST=intric-db
       - REDIS_HOST=intric-redis
@@ -26,6 +31,11 @@ services:
     container_name: intric-db
     image: pgvector/pgvector:pg13
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] # Healthcheck command for the database
+      interval: 5s # Time between health checks
+      timeout: 5s # Time to wait for a health check to succeed
+      retries: 5 # Number of retries before considering the service unhealthy
     env_file:
       - ./backend/.env
     networks:
