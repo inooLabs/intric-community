@@ -51,6 +51,21 @@ To run the frontend for this project locally, follow these steps:
 6. Run `pnpm -w run dev` to start the project for development.
 7. Navigate to `localhost:3000` and login with email `user@example.com` and password `Password1!` (provided you have run the setup steps for the backend).
 
+### Experimental: Run with Docker Compose
+
+You can also spin up Intric by using [docker-compose](https://docs.docker.com/compose/):
+
+```bash
+# Clone the repository
+git clone https://github.com/inooLabs/intric-release.git
+# Create env files for backend and frontend
+# You can add your API keys there and adjust the settings
+cp backend/.env.template backend/.env
+cp frontend/apps/web/.env.example frontend/apps/web/.env
+
+docker compose up
+```
+
 ## Contribution guidelines
 
 Coming soon.
