@@ -103,7 +103,7 @@ completion_models:
     org: OpenAI
     vision: true
 
-  - name: 'claude-3-opus-20240229'
+  - name: 'claude-3-opus-latest'
     nickname: 'Claude 3 Opus'
     family: 'claude'
     token_limit: 200000
@@ -136,7 +136,7 @@ completion_models:
     org: Anthropic
     vision: true
   
-  - name: 'claude-3-5-haiku-20241022'
+  - name: 'claude-3-5-haiku-latest'
     nickname: 'Claude 3.5 Haiku'
     family: 'claude'
     token_limit: 200000
@@ -147,8 +147,8 @@ completion_models:
     org: Anthropic
     vision: true
 
-  - name: 'claude-3-5-sonnet-20241022'
-    nickname: 'Claude 3.5 Sonnet (Oct 2024)'
+  - name: 'claude-3-5-sonnet-latest'
+    nickname: 'Claude 3.5 Sonnet (latest)'
     family: 'claude'
     token_limit: 200000
     is_deprecated: false
