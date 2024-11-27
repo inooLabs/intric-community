@@ -67,3 +67,20 @@ The development of this project has been partially funded by the following entit
 The parts that each of the entities hold copyright to is marked within the respective files. For all code where there is no marking, the copyright should be attributed to **inooLabs AB**.
 
 For any inquiries regarding usage rights, please contact **jonatan.cerwall@inoolabs.com**.
+
+## License Coverage Report
+
+You can check the license coverage of the codebase using the `license_report.py` script. This tool scans all files to verify they contain both the MIT license and Sundsvalls kommun attribution.
+
+To run the report:
+```bash
+python license_report.py
+```
+
+The script will generate a detailed report showing:
+- Coverage by directory and file extension
+- Number of files with/without explicit license and attribution
+- Line coverage statistics
+- Only (sub)directories with >1000 lines of code are shown by default
+
+Files in `node_modules`, `venv`, `.git` directories and common binary files (`.png`, `.jpg`, `.woff2`, `.md`) are automatically excluded from the analysis.
