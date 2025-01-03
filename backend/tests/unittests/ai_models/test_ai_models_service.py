@@ -3,14 +3,14 @@ from uuid import uuid4
 
 import pytest
 
-from instorage.ai_models.ai_models_service import AIModelsService
-from instorage.ai_models.completion_models.completion_model import CompletionModelFamily
-from instorage.main.config import SETTINGS
-from instorage.main.exceptions import BadRequestException, UnauthorizedException
-from instorage.roles.permissions import Permission
-from instorage.roles.role import RoleInDB
-from instorage.user_groups.user_group import UserGroupInDB
-from instorage.users.user import UserInDB
+from intric.ai_models.ai_models_service import AIModelsService
+from intric.ai_models.completion_models.completion_model import CompletionModelFamily
+from intric.main.config import SETTINGS
+from intric.main.exceptions import BadRequestException, UnauthorizedException
+from intric.roles.permissions import Permission
+from intric.roles.role import RoleInDB
+from intric.user_groups.user_group import UserGroupInDB
+from intric.users.user import UserInDB
 from tests.fixtures import (
     TEST_EMBEDDING_MODEL,
     TEST_EMBEDDING_MODEL_ADA,
@@ -48,6 +48,7 @@ TEST_ADMIN_USER = UserInDB(
     tenant=TEST_TENANT,
     user_groups=[],
     roles=[TEST_ADMIN_ROLE],
+    state="active",
 )
 TEST_NO_ADMIN_USER = UserInDB(
     id=uuid4(),
@@ -61,6 +62,7 @@ TEST_NO_ADMIN_USER = UserInDB(
     tenant=TEST_TENANT,
     user_groups=[],
     roles=[TEST_NO_ADMIN_ROLE],
+    state="active",
 )
 TEST_USER_GROUP = UserGroupInDB(id=uuid4(), name="test name", tenant_id=TEST_TENANT.id)
 
