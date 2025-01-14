@@ -11,6 +11,13 @@ from instorage.roles.permissions import Permission
 from instorage.spaces.space import UNAUTHORIZED_EXCEPTION_MESSAGE, Space, SpaceRole
 
 
+@pytest.fixture(autouse=True)
+def restore_intric_proprietary_setting():
+    original_value = SETTINGS.using_intric_proprietary
+    yield
+    SETTINGS.using_intric_proprietary = original_value
+
+
 @pytest.fixture
 def space():
     return Space(
@@ -364,6 +371,10 @@ def test_can_create_groups_in_shared_space_if_editor_or_admin(space: Space):
     assert space.can_create_groups(admin)
 
 
+@pytest.mark.skipif(
+    not SETTINGS.using_intric_proprietary,
+    reason="Test skipped when not using intric proprietary",
+)
 def test_can_create_websites_in_personal_space(space: Space):
     user = MagicMock(permissions={Permission.WEBSITES})
     space.user_id = user.id
@@ -371,6 +382,10 @@ def test_can_create_websites_in_personal_space(space: Space):
     assert space.can_create_websites(user)
 
 
+@pytest.mark.skipif(
+    not SETTINGS.using_intric_proprietary,
+    reason="Test skipped when not using intric proprietary",
+)
 def test_can_not_create_websites_in_personal_space_without_website_permission(
     space: Space,
 ):
@@ -380,6 +395,10 @@ def test_can_not_create_websites_in_personal_space_without_website_permission(
     assert not space.can_create_websites(user)
 
 
+@pytest.mark.skipif(
+    not SETTINGS.using_intric_proprietary,
+    reason="Test skipped when not using intric proprietary",
+)
 def test_can_create_websites_in_shared_space_if_editor_or_admin(space: Space):
     editor = MagicMock(id=1, role=SpaceRole.EDITOR)
     admin = MagicMock(id=2, role=SpaceRole.ADMIN)
