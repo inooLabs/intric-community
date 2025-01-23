@@ -42,6 +42,17 @@ completion_models:
     hosting: 'eu'
     vision: false
 
+  - name: 'Qwen/Qwen2.5-14B-Instruct'
+    nickname: 'Qwen'
+    family: 'vllm'
+    token_limit: 128000
+    nr_billion_parameters: 14
+    hf_link: 'https://huggingface.co/Qwen/Qwen2.5-14B-Instruct'
+    is_deprecated: false
+    stability: 'experimental'
+    hosting: 'eu'
+    vision: false
+
   - name: 'meta-llama/Meta-Llama-3-8B-Instruct'
     nickname: 'Llama 3'
     family: 'vllm'
@@ -66,7 +77,7 @@ completion_models:
     open_source: true
     nr_billion_parameters: 8
     hf_link: 'https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct'
-    description: The small variant of Llama 3.1. Despite it's size it boasts an impressive context size. Fully Open Source, hosted in the EU.
+    description: The small variant of Llama 3.1. Despite its size it boasts an impressive context size. Fully Open Source, hosted in the EU.
     org: Meta
     vision: false
 
@@ -92,14 +103,14 @@ completion_models:
     org: OpenAI
     vision: true
 
-  - name: 'claude-3-opus-20240229'
+  - name: 'claude-3-opus-latest'
     nickname: 'Claude 3 Opus'
     family: 'claude'
     token_limit: 200000
     is_deprecated: false
     stability: 'stable'
     hosting: 'usa'
-    description: Anthropics biggest model. Will be a bit slow, but capable.
+    description: Anthropic's biggest model. Will be a bit slow, but capable.
     org: Anthropic
     vision: true
 
@@ -121,18 +132,40 @@ completion_models:
     is_deprecated: false
     stability: 'stable'
     hosting: 'usa'
-    description: A small and quick model from Anthropic.
+    description: A previous version of Anthropic's smallest and quickest model.
     org: Anthropic
     vision: true
-
-  - name: 'claude-3-5-sonnet-20240620'
-    nickname: 'Claude 3.5 Sonnet'
+  
+  - name: 'claude-3-5-haiku-latest'
+    nickname: 'Claude 3.5 Haiku'
     family: 'claude'
     token_limit: 200000
     is_deprecated: false
     stability: 'stable'
     hosting: 'usa'
-    description: Anthropics flagship model, and the best that they have in terms of performance. Matches its predecessor in speed.
+    description: A small and quick model from Anthropic.
+    org: Anthropic
+    vision: true
+
+  - name: 'claude-3-5-sonnet-latest'
+    nickname: 'Claude 3.5 Sonnet (latest)'
+    family: 'claude'
+    token_limit: 200000
+    is_deprecated: false
+    stability: 'stable'
+    hosting: 'usa'
+    description: Anthropic's flagship model, and the best that they have in terms of performance.
+    org: Anthropic
+    vision: true
+
+  - name: 'claude-3-5-sonnet-20240620'
+    nickname: 'Claude 3.5 Sonnet (Jun 2024)'
+    family: 'claude'
+    token_limit: 200000
+    is_deprecated: false
+    stability: 'stable'
+    hosting: 'usa'
+    description: Anthropic's previous flagship model.
     org: Anthropic
     vision: true
 
@@ -179,5 +212,16 @@ embedding_models:
     stability: 'experimental'
     hosting: 'eu'
     hf_link: 'https://huggingface.co/intfloat/multilingual-e5-large'
+    description: Open Source embedding model that matches the performance of OpenAI's embedding models.
+    org: Microsoft
+
+  - name: 'multilingual-e5-large-instruct'
+    family: 'e5'
+    open_source: true
+    max_input: 8191
+    is_deprecated: false
+    stability: 'experimental'
+    hosting: 'eu'
+    hf_link: 'https://huggingface.co/intfloat/multilingual-e5-large-instruct'
     description: Open Source embedding model that matches the performance of OpenAI's embedding models.
     org: Microsoft
