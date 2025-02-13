@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-logging.getLogger('passlib').setLevel(logging.ERROR)
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
 
 # Alembic command
@@ -73,11 +73,11 @@ def add_tenant_user(
         if user is None:
             hashed_pass, salt = hash_password(user_password)
             add_user_query = sql.SQL(
-                "INSERT INTO users (username, email, password, salt, tenant_id, used_tokens) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id"
+                "INSERT INTO users (username, email, password, salt, tenant_id, used_tokens, state) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id"
             )
             cur.execute(
                 add_user_query,
-                (user_name, user_email, hashed_pass, salt, tenant_id, 0),
+                (user_name, user_email, hashed_pass, salt, tenant_id, 0, "active"),
             )
             user_id = cur.fetchone()[0]
         else:
@@ -85,24 +85,24 @@ def add_tenant_user(
 
         # Check if "Owner" role already exists
         check_role_query = sql.SQL("SELECT id FROM predefined_roles WHERE name = %s")
-        cur.execute(check_role_query, ('Owner',))
+        cur.execute(check_role_query, ("Owner",))
         role = cur.fetchone()
 
         if role is None:
             owner_permissions = [
-                'admin',
-                'assistants',
-                'services',
-                'collections',
-                'insights',
-                'AI',
-                'editor',
-                'websites',
+                "admin",
+                "assistants",
+                "services",
+                "collections",
+                "insights",
+                "AI",
+                "editor",
+                "websites",
             ]
             add_role_query = sql.SQL(
                 "INSERT INTO predefined_roles (name, permissions) VALUES (%s, %s) RETURNING id"
             )
-            cur.execute(add_role_query, ('Owner', owner_permissions))
+            cur.execute(add_role_query, ("Owner", owner_permissions))
             predefined_role_id = cur.fetchone()[0]
         else:
             predefined_role_id = role[0]
@@ -124,7 +124,7 @@ def add_tenant_user(
         conn.commit()
         cur.close()
     except Exception as e:
-        print(f"Error adding tenant and user: {e.with_traceback()}")
+        print(f"Error adding tenant and user: {e.__traceback__}")
         conn.rollback()
 
 
@@ -151,6 +151,8 @@ if __name__ == "__main__":
         "user@example.com",
         "Password1!",
     )
+
+    print("Great! Your Tenant and User are all set up.")
 
     # Close the connection
     conn.close()
