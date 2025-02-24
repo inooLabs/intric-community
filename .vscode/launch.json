@@ -18,5 +18,15 @@
             "justMyCode": true,
             "cwd": "${workspaceFolder}/backend"
         },
+        {
+            "name": "Tests: Debug",
+            "consoleName": "Tests: Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/backend"
+        }
     ]
 }

@@ -62,6 +62,8 @@ export type AppTemplate = components["schemas"]["AppTemplatePublic"];
 export type TemplateAdditionalField = components["schemas"]["AdditionalField"];
 export type SpaceRole = components["schemas"]["SpaceRole"];
 export type StorageSpaceInfo = components["schemas"]["StorageSpaceInfoModel"];
+export type SecurityLevel = components["schemas"]["SecurityLevelPublic"];
+export type SpaceUpdateDryRunResponse = components["schemas"]["SpaceUpdateDryRunResponse"];
 
 export type Paginated<T> = {
   items: T[];

@@ -101,6 +101,7 @@ class CompletionModelRepository:
                 tenant_id=self.user.tenant_id,
                 is_org_enabled=completion_model.is_org_enabled,
                 is_org_default=completion_model.is_org_default,
+                security_level_id=completion_model.security_level_id,
             )
             await self.session.execute(stmt)
 
@@ -110,6 +111,7 @@ class CompletionModelRepository:
                 .values(
                     is_org_enabled=completion_model.is_org_enabled,
                     is_org_default=completion_model.is_org_default,
+                    security_level_id=completion_model.security_level_id,
                 )
                 .where(
                     CompletionModelSettings.completion_model_id == completion_model.id,

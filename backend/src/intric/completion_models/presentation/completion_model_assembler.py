@@ -34,6 +34,7 @@ class CompletionModelAssembler:
             is_org_default=completion_model.is_org_default,
             can_access=completion_model.can_access,
             is_locked=completion_model.is_locked,
+            security_level_id=completion_model.security_level_id,
         )
 
     def from_completion_models_to_models(

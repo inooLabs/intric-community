@@ -26,10 +26,10 @@
   </Page.Header>
   <Page.Main>
     <Page.Tab id="completion_models">
-      <CompletionModelsTable completionModels={data.models.completionModels} />
+      <CompletionModelsTable completionModels={data.models.completionModels} securityLevels={data.securityLevels} />
     </Page.Tab>
     <Page.Tab id="embedding_models">
-      <EmbeddingModelsTable embeddingModels={data.models.embeddingModels} />
+      <EmbeddingModelsTable embeddingModels={data.models.embeddingModels} securityLevels={data.securityLevels} />
     </Page.Tab>
   </Page.Main>
 </Page.Root>

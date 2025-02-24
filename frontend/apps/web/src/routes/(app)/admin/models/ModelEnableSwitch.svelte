@@ -12,20 +12,48 @@
 
   export let model: (CompletionModel | EmbeddingModel) & { is_locked?: boolean | null | undefined };
 
+  export let modeltype: "completion" | "embedding";
+
   const intric = getIntric();
 
-  async function toggleEnabled() {
-    const target = "token_limit" in model ? { completionModel: model } : { embeddingModel: model };
+  async function updateCompletionModel(
+    completionModel: { id: string },
+    update: { is_org_enabled?: boolean; security_level_id?: string | null }
+  ) {
     try {
-      model = await intric.models.update({
-        ...target,
-        update: {
-          is_org_enabled: !model.is_org_enabled
-        }
-      });
+      await intric.models.update({ completionModel, update });
       invalidate("admin:models:load");
     } catch (e) {
-      alert(`Error changing status of ${model.name}`);
+      alert(e);
+      console.error(e);
+    }
+  }
+
+  async function updateEmbeddingModel(
+    embeddingModel: { id: string },
+    update: { is_org_enabled?: boolean; security_level_id?: string | null }
+  ) {
+    try {
+      await intric.models.update({ embeddingModel, update });
+      invalidate("admin:models:load");
+    } catch (e) {
+      alert(e);
+      console.error(e);
+    }
+  }
+
+  async function updateModel({ next }: { next: boolean }) {
+    const update = {
+      is_org_enabled: next ?? false,
+      security_level_id: model.security_level_id
+    };
+
+    if (modeltype === "completion") {
+      await updateCompletionModel({ id: model.id }, update);
+    } else if (modeltype === "embedding") {
+      await updateEmbeddingModel({ id: model.id }, update);
+    } else {
+      throw new Error("Invalid model type");
     }
   }
 
@@ -39,9 +67,9 @@
 <div class="-ml-3 flex items-center gap-4">
   <Tooltip text={tooltip}>
     <Input.Switch
-      sideEffect={toggleEnabled}
+      sideEffect={updateModel}
       value={model.is_org_enabled}
-      disabled={model.is_locked ?? false}
-    ></Input.Switch>
+      disabled={model.is_locked}
+    />
   </Tooltip>
 </div>

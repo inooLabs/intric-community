@@ -1,5 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
+from intric.securitylevels.security_level import SecurityLevel
 from intric.ai_models.embedding_models.embedding_model import EmbeddingModel
 from intric.completion_models.domain import CompletionModelFactory
 from intric.database.tables.ai_models_table import (
@@ -59,6 +60,7 @@ class SpaceFactory:
         default_assistant: "Assistant" = None,
         assistants: list["Assistant"] = [],
         apps: list["App"] = [],
+        security_level: Optional[SecurityLevel] = None,
     ) -> Space:
         completion_models = [
             CompletionModelFactory.create_from_db(
@@ -120,4 +122,5 @@ class SpaceFactory:
             websites=websites,
             completion_models=completion_models,
             members=members,
+            security_level=security_level,
         )

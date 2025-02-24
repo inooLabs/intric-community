@@ -168,6 +168,9 @@ from intric.websites.website_repo import WebsiteRepository
 from intric.websites.website_service import WebsiteService
 from intric.worker.task_manager import TaskManager
 from intric.workflows.step_repo import StepRepository
+from intric.securitylevels.security_level_repo import SecurityLevelRepository
+from intric.securitylevels.security_level_service import SecurityLevelService
+from intric.securitylevels.api.security_level_assembler import SecurityLevelAssembler
 
 if SETTINGS.using_intric_proprietary:
     from intric_prop.apps.publish_app_service import PublishAppService
@@ -245,7 +248,7 @@ class Container(containers.DeclarativeContainer):
     integration_assembler = providers.Factory(IntegrationAssembler)
     tenant_integration_assembler = providers.Factory(TenantIntegrationAssembler)
     user_integration_assembler = providers.Factory(UserIntegrationAssembler)
-
+    security_level_assembler = providers.Factory(SecurityLevelAssembler)
     # Repositories
     user_repo = providers.Factory(UsersRepository, session=session)
     tenant_repo = providers.Factory(TenantRepository, session=session)
@@ -309,6 +312,10 @@ class Container(containers.DeclarativeContainer):
     storage_repo = providers.Factory(
         StorageInfoRepository, user=user, session=session, factory=storage_info_factory
     )
+    security_level_repo = providers.Factory(
+        SecurityLevelRepository,
+        session=session,
+    )
     space_repo = providers.Factory(
         SpaceRepository,
         user=user,
@@ -316,6 +323,7 @@ class Container(containers.DeclarativeContainer):
         session=session,
         assistant_repo=assistant_repo,
         app_repo=app_repo,
+        security_level_repo=security_level_repo,
     )
     app_template_repo = providers.Factory(
         AppTemplateRepository, factory=app_template_factory, session=session
@@ -325,6 +333,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     module_repo = providers.Factory(ModuleRepository, session=session)
+
 
     # Completion model adapters
     openai_model_adapter = providers.Factory(OpenAIModelAdapter, model=completion_model)
@@ -370,17 +379,25 @@ class Container(containers.DeclarativeContainer):
     image_extractor = providers.Factory(ImageExtractor)
 
     # Services
+    security_level_service = providers.Factory(
+        SecurityLevelService,
+        user=user,
+        repo=security_level_repo,
+    )
+
     ai_models_service = providers.Factory(
         AIModelsService,
         user=user,
         embedding_model_repo=embedding_model_repo,
         completion_model_repo=completion_model_repo,
         tenant_repo=tenant_repo,
+        security_level_service=security_level_service,
     )
     completion_model_crud_service = providers.Factory(
         CompletionModelCRUDService,
         user=user,
         completion_model_repo=completion_model_repo2,
+        security_level_service=security_level_service
     )
     auth_service = providers.Factory(
         AuthService,
@@ -408,6 +425,7 @@ class Container(containers.DeclarativeContainer):
         ai_models_service=ai_models_service,
         completion_model_crud_service=completion_model_crud_service,
         actor_manager=actor_manager,
+        security_level_service=security_level_service,
     )
     storage_service = providers.Factory(StorageInfoService, repo=storage_repo)
     job_service = providers.Factory(

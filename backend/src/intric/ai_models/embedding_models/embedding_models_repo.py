@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 import sqlalchemy as sa
@@ -30,7 +31,9 @@ class EmbeddingModelsRepository:
         )
         return await self.session.scalar(query)
 
-    async def _get_models_settings_mapper(self, tenant_id: UUID):
+    async def _get_models_settings_mapper(
+        self, tenant_id: UUID
+    ) -> dict[UUID, EmbeddingModelSettings]:
         query = sa.select(EmbeddingModelSettings).where(
             EmbeddingModelSettings.tenant_id == tenant_id
         )
@@ -43,6 +46,7 @@ class EmbeddingModelsRepository:
         settings = await self._get_model_settings(id, tenant_id)
         if settings:
             model.is_org_enabled = settings.is_org_enabled
+            model.security_level_id = settings.security_level_id
         return model
 
     async def get_model_by_name(self, name: str) -> EmbeddingModel:
@@ -72,12 +76,18 @@ class EmbeddingModelsRepository:
         if id_list is not None:
             stmt = stmt.where(EmbeddingModels.id.in_(id_list))
 
-        models = await self.delegate.get_models_from_query(stmt)
-
-        settings_mapper = await self._get_models_settings_mapper(tenant_id)
+        models: list[EmbeddingModel] = await self.delegate.get_models_from_query(stmt)
 
         for model in models:
-            model.is_org_enabled = settings_mapper.get(model.id, False)
+            if tenant_id is not None:
+                model_settings = await self._get_model_settings(model.id, tenant_id)
+
+            model.is_org_enabled = (
+                model_settings.is_org_enabled if model_settings else False
+            )
+            model.security_level_id = (
+                model_settings.security_level_id if model_settings else None
+            )
 
         return models
 
@@ -92,6 +102,7 @@ class EmbeddingModelsRepository:
         self,
         is_org_enabled: bool,
         embedding_model_id: UUID,
+        security_level_id: UUID | None,
         tenant_id: UUID,
     ):
         query = sa.select(EmbeddingModelSettings).where(
@@ -104,7 +115,10 @@ class EmbeddingModelsRepository:
             if settings:
                 query = (
                     sa.update(EmbeddingModelSettings)
-                    .values(is_org_enabled=is_org_enabled)
+                    .values(
+                        is_org_enabled=is_org_enabled,
+                        security_level_id=security_level_id,
+                    )
                     .where(
                         EmbeddingModelSettings.tenant_id == tenant_id,
                         EmbeddingModelSettings.embedding_model_id == embedding_model_id,
@@ -116,6 +130,7 @@ class EmbeddingModelsRepository:
                 sa.insert(EmbeddingModelSettings)
                 .values(
                     is_org_enabled=is_org_enabled,
+                    security_level_id=security_level_id,
                     embedding_model_id=embedding_model_id,
                     tenant_id=tenant_id,
                 )

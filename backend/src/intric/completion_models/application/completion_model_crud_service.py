@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Optional
-
+from uuid import UUID
 from intric.completion_models.domain import ModelFamily
 from intric.main.config import SETTINGS
 from intric.main.exceptions import UnauthorizedException
@@ -10,14 +10,19 @@ if TYPE_CHECKING:
 
     from intric.completion_models.domain import CompletionModelRepository
     from intric.users.user import UserInDB
+    from intric.securitylevels.security_level_service import SecurityLevelService
 
 
 class CompletionModelCRUDService:
     def __init__(
-        self, user: "UserInDB", completion_model_repo: "CompletionModelRepository"
+        self,
+        user: "UserInDB",
+        completion_model_repo: "CompletionModelRepository",
+        security_level_service: "SecurityLevelService",
     ):
         self.completion_model_repo = completion_model_repo
         self.user = user
+        self.security_level_service = security_level_service
 
     async def get_completion_models(self):
         models = await self.completion_model_repo.all()
@@ -70,6 +75,7 @@ class CompletionModelCRUDService:
         model_id: "UUID",
         is_org_enabled: Optional[bool],
         is_org_default: Optional[bool],
+        security_level_id: Optional[UUID],
     ):
         completion_model = await self.completion_model_repo.one(model_id=model_id)
 
@@ -78,6 +84,8 @@ class CompletionModelCRUDService:
 
         if is_org_default is not None:
             completion_model.is_org_default = is_org_default
+
+        completion_model.security_level_id = security_level_id
 
         await self.completion_model_repo.update(completion_model)
 

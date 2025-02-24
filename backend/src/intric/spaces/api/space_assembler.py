@@ -17,10 +17,12 @@ from intric.spaces.api.space_models import (
     SpacePublic,
     SpaceRole,
     SpaceSparse,
+    SpaceUpdateDryRunResponse,
 )
 from intric.spaces.space import Space
 from intric.users.user import UserInDB
 from intric.websites.website_models import WebsiteSparse
+from intric.spaces.space_service import SpaceUpdateAnalysis
 
 if TYPE_CHECKING:
     from intric.actors import ActorManager
@@ -276,6 +278,7 @@ class SpaceAssembler:
             personal=space.is_personal(),
             permissions=self._get_space_permissions(space),
             available_roles=available_roles,
+            security_level=space.security_level,
         )
 
     def from_space_to_sparse_model(self, space: Space) -> SpaceSparse:
@@ -287,6 +290,7 @@ class SpaceAssembler:
             description=space.description,
             personal=space.is_personal(),
             permissions=self._get_space_permissions(space),
+            security_level=space.security_level,
         )
 
     def from_space_to_dashboard_model(self, space: Space) -> SpaceDashboard:
@@ -320,4 +324,13 @@ class SpaceAssembler:
         return CreateSpaceGroupsResponse(
             **group.model_dump(),
             metadata=GroupMetadata(num_info_blobs=count, size=group.size),
+        )
+
+    @staticmethod
+    def from_space_analyze_update_to_response(analysis: SpaceUpdateAnalysis) -> SpaceUpdateDryRunResponse:
+        return SpaceUpdateDryRunResponse(
+            unavailable_completion_models=analysis.unavailable_completion_models,
+            unavailable_embedding_models=analysis.unavailable_embedding_models,
+            current_security_level=analysis.current_security_level,
+            new_security_level=analysis.new_security_level,
         )

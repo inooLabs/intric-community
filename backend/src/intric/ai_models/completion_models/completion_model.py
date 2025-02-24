@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from intric.files.file_models import File
 from intric.logging.logging import LoggingDetails
 from intric.main.models import InDB, partial_model
-
+from intric.securitylevels.api.security_level_models import SecurityLevelPublic
 
 class CompletionModelFamily(str, Enum):
     OPEN_AI = "openai"
@@ -64,16 +64,19 @@ class CompletionModelUpdate(CompletionModelBase):
 class CompletionModelUpdateFlags(BaseModel):
     is_org_enabled: Optional[bool] = None
     is_org_default: Optional[bool] = None
+    security_level_id: Optional[UUID] = None
 
 
 class CompletionModel(CompletionModelBase, InDB):
     is_org_enabled: bool = False
     is_org_default: bool = False
+    security_level_id: Optional[UUID] = None
 
 
 class CompletionModelPublic(CompletionModel):
     can_access: bool = False
     is_locked: bool = True
+    security_level: Optional[SecurityLevelPublic] = None
 
 
 class CompletionModelResponse(BaseModel):

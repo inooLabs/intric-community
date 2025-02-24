@@ -10,6 +10,7 @@ from intric.ai_models.embedding_models.embedding_model import (
 from intric.main.exceptions import BadRequestException, UnauthorizedException
 from intric.spaces.api.space_models import SpaceMember, SpaceRoleValue
 from intric.websites.website_models import WebsiteSparse
+from intric.securitylevels.security_level import SecurityLevel
 
 if TYPE_CHECKING:
     from intric.apps import App
@@ -46,6 +47,7 @@ class Space:
         members: dict[UUID, SpaceMember],
         created_at: datetime = None,
         updated_at: datetime = None,
+        security_level: Optional[SecurityLevel] = None,
     ):
         self.id = id
         self.tenant_id = tenant_id
@@ -63,6 +65,7 @@ class Space:
         self.members = members
         self.created_at = created_at
         self.updated_at = updated_at
+        self.security_level = security_level
 
     def _get_member_ids(self):
         return self.members.keys()
@@ -158,6 +161,7 @@ class Space:
         description: str = None,
         embedding_models: list[EmbeddingModelPublic] = None,
         completion_models: list["CompletionModel"] = None,
+        security_level: SecurityLevel = None,
     ):
         if name is not None:
             if self.is_personal():
@@ -188,6 +192,8 @@ class Space:
                 )
 
             self.embedding_models = embedding_models
+
+        self.security_level = security_level
 
     def add_member(self, user: SpaceMember):
         if self.is_personal():

@@ -16,6 +16,7 @@
   import { getAppContext } from "$lib/core/AppContext";
   import { Navigation } from "$lib/components/layout";
   import { IconStorage } from "@intric/icons/storage";
+  import { IconKey } from "@intric/icons/key";
 
   let currentRoute = "";
   $: currentRoute = $page.url.pathname;
@@ -75,7 +76,12 @@
       icon: IconStorage,
       label: "Storage",
       url: "/admin/storage"
-    }
+    },
+    {
+      icon: IconKey,
+      label: "Security Levels",
+      url: "/admin/security-levels"
+    },
   ];
 
   function isSelected(url: string, currentRoute: string) {

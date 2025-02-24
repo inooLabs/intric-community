@@ -2,11 +2,11 @@ from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from intric.database.tables.base_class import BaseCrossReference, BasePublic
 from intric.database.tables.tenant_table import Tenants
-
+from intric.database.tables.security_levels_table import SecurityLevels
 
 class CompletionModels(BasePublic):
     name: Mapped[str] = mapped_column(unique=True)
@@ -36,6 +36,15 @@ class CompletionModelSettings(BaseCrossReference):
     is_org_enabled: Mapped[bool] = mapped_column(server_default="False")
     is_org_default: Mapped[bool] = mapped_column(server_default="False")
 
+    # Security level relationship
+    security_level_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey(SecurityLevels.id, ondelete="SET NULL"),
+        nullable=True
+    )
+    security_level: Mapped[Optional["SecurityLevels"]] = relationship(
+        back_populates="completion_model_settings"
+    )
+
 
 class EmbeddingModels(BasePublic):
     name: Mapped[str] = mapped_column(unique=True)
@@ -60,4 +69,12 @@ class EmbeddingModelSettings(BaseCrossReference):
         ForeignKey(EmbeddingModels.id, ondelete="CASCADE"), primary_key=True
     )
     is_org_enabled: Mapped[bool] = mapped_column(server_default="False")
-    is_org_default: Mapped[bool] = mapped_column(server_default="False")
+
+    # Security level relationship
+    security_level_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey(SecurityLevels.id, ondelete="SET NULL"),
+        nullable=True
+    )
+    security_level: Mapped[Optional["SecurityLevels"]] = relationship(
+        back_populates="embedding_model_settings"
+    )
