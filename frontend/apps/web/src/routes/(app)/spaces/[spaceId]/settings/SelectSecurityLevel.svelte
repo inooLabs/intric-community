@@ -111,25 +111,25 @@
 <div class="flex flex-col gap-4 py-5 pr-6 lg:flex-row lg:gap-12">
   <div class="pl-2 pr-12 lg:w-2/5">
     <h3 class="pb-1 text-lg font-medium">Security Level</h3>
-    <p class="text-stone-500">Set the security level for this space and all its resources.</p>
+    <p class="text-secondary">Set the security level for this space and all its resources.</p>
     {#if securityLevel && hasIncompatibleModels(securityLevel)}
-      <p class="mt-2.5 rounded-md border border-amber-500 bg-amber-50 px-2 py-1 text-sm text-amber-800">
+      <p class="mt-2.5 rounded-md border border-warning-default bg-warning-dimmer px-2 py-1 text-sm text-warning-stronger">
         <span class="font-bold">Warning:&nbsp;</span>Some AI models don't meet the selected security level and will be unavailable.
       </p>
     {/if}
   </div>
   <div class="flex-grow min-w-0 w-full lg:pl-12 lg:max-w-[60%]">
-    <div class="overflow-hidden rounded-lg border border-stone-300 bg-white shadow">
-      <div class="cursor-pointer border-b border-stone-200 last:border-b-0">
+    <div class="overflow-hidden rounded-lg border border-default bg-primary shadow">
+      <div class="cursor-pointer border-b border-default last:border-b-0">
         <div class="px-4 py-3 font-medium">Security level</div>
         <div class="flex flex-col">
           {#each radioOptions as option}
-            <label class="flex cursor-pointer flex-col border-t border-stone-200 px-4 py-3 hover:bg-stone-50">
+            <label class="flex cursor-pointer flex-col border-t border-default px-4 py-3 hover:bg-hover-dimmer">
               <div class="flex items-center gap-3">
                 <input
                   type="radio"
                   name="security-level"
-                  class="h-4 w-4 cursor-pointer text-blue-600"
+                  class="h-4 w-4 cursor-pointer text-accent-default"
                   checked={option.value === (pendingSecurityLevel ?? securityLevel)}
                   disabled={isUpdating}
                   on:change={() => handleSecurityLevelChange(option.value)}
@@ -137,9 +137,9 @@
                 <span class="font-medium">{option.label}</span>
               </div>
               {#if option.value?.description}
-                <p class="mt-1 ml-7 text-sm text-stone-500 break-words">{option.value.description}</p>
+                <p class="mt-1 ml-7 text-sm text-secondary break-words">{option.value.description}</p>
               {:else if !option.value}
-                <p class="mt-1 ml-7 text-sm text-stone-500 break-words">No specific security requirements for this space.</p>
+                <p class="mt-1 ml-7 text-sm text-secondary break-words">No specific security requirements for this space.</p>
               {/if}
             </label>
           {/each}
