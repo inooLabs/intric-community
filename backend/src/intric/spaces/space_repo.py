@@ -347,6 +347,7 @@ class SpaceRepository:
             completion_models_in_db=completion_models,
             embedding_models_in_db=embedding_models,
             default_assistant=space.default_assistant,
+            security_level=space.security_level,
         )
 
     async def delete(self, id: UUID):

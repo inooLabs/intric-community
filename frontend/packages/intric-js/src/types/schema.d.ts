@@ -475,12 +475,6 @@ export interface paths {
     /** Enable Embedding Model */
     post: operations["enable_embedding_model_api_v1_embedding_models__id___post"];
   };
-  "/api/v1/embedding-models/{id}/security-level": {
-    /** Set Embedding Model Security Level */
-    put: operations["set_embedding_model_security_level_api_v1_embedding_models__id__security_level_put"];
-    /** Unset Embedding Model Security Level */
-    delete: operations["unset_embedding_model_security_level_api_v1_embedding_models__id__security_level_delete"];
-  };
   "/api/v1/files/": {
     /** Get Files */
     get: operations["get_files_api_v1_files__get"];
@@ -1745,14 +1739,6 @@ export interface components {
       /** Description */
       description?: string | null;
       org?: components["schemas"]["Orgs"] | null;
-    };
-    /** EmbeddingModelSecurityLevelUpdate */
-    EmbeddingModelSecurityLevelUpdate: {
-      /**
-       * Security Level Id
-       * Format: uuid
-       */
-      security_level_id: string;
     };
     /** EmbeddingModelSparse */
     EmbeddingModelSparse: {
@@ -3302,9 +3288,9 @@ export interface components {
      */
     SpaceUpdateDryRunResponse: {
       /** Unavailable Completion Models */
-      unavailable_completion_models: components["schemas"]["CompletionModelSparse"][];
+      unavailable_completion_models: components["schemas"]["CompletionModelPublic"][];
       /** Unavailable Embedding Models */
-      unavailable_embedding_models: components["schemas"]["EmbeddingModelSparse"][];
+      unavailable_embedding_models: components["schemas"]["EmbeddingModelPublic"][];
       current_security_level: components["schemas"]["SecurityLevelSparse"] | null;
       new_security_level: components["schemas"]["SecurityLevelSparse"] | null;
     };
@@ -6885,61 +6871,6 @@ export interface operations {
       404: {
         content: {
           "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Set Embedding Model Security Level */
-  set_embedding_model_security_level_api_v1_embedding_models__id__security_level_put: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["EmbeddingModelSecurityLevelUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EmbeddingModelPublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Unset Embedding Model Security Level */
-  unset_embedding_model_security_level_api_v1_embedding_models__id__security_level_delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EmbeddingModelPublic"];
         };
       };
       /** @description Validation Error */

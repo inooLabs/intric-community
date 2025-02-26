@@ -77,7 +77,7 @@
     <section class="relative">
       <div class="relative flex flex-col gap-8 py-5 pr-6 lg:gap-12">
         <SelectModels
-          selectableModels={data.completionModels.filter((model) => model.can_access)}
+          selectableModels={data.completionModels.filter((model) => model.is_org_enabled)}
           securityLevels={data.securityLevels}
           modelType="completion"
           title="Completion Models"
@@ -85,7 +85,7 @@
         />
 
         <SelectModels
-          selectableModels={data.embeddingModels.filter((model) => model.can_access)}
+          selectableModels={data.embeddingModels.filter((model) => model.is_org_enabled)}
           securityLevels={data.securityLevels}
           modelType="embedding"
           title="Embedding Models"
