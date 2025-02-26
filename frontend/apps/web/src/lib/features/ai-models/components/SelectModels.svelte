@@ -123,14 +123,14 @@
     {:else}
       {#each availableModels as model (model.id)}
         <div
-          class="cursor-pointer border-b border-black/10 py-4 pl-2 pr-4 hover:bg-stone-50"
-      >
-        <Input.Switch
-          value={$currentlySelectedModels.includes(model.id)}
-          sideEffect={() => toggleModel(model)}
+          class="cursor-pointer border-b py-4 pl-2 pr-4 transition-colors hover:[background:var(--background-hover-dimmer)] [border-color:var(--border-default)]"
         >
-          <ModelNameAndVendor {model} />
-        </Input.Switch>
+          <Input.Switch
+            value={$currentlySelectedModels.includes(model.id)}
+            sideEffect={() => toggleModel(model)}
+          >
+            <ModelNameAndVendor {model} />
+          </Input.Switch>
         </div>
       {/each}
     {/if}
