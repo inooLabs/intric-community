@@ -7,11 +7,11 @@ import pytest
 from intric.main.exceptions import BadRequestException, UnauthorizedException
 from intric.spaces.api.space_models import SpaceRoleValue
 from intric.spaces.space_service import SpaceService
-from tests.fixtures import TEST_USER, TEST_UUID, TEST_TENANT
+from tests.fixtures import TEST_USER, TEST_UUID, TEST_TENANT, TEST_MODEL_GPT4, TEST_MODEL_CHATGPT, TEST_EMBEDDING_MODEL, TEST_EMBEDDING_MODEL_ADA
 from intric.securitylevels.security_level import SecurityLevel
 from intric.spaces.space import Space
-
-
+from intric.ai_models.completion_models.completion_model import CompletionModelPublic
+from intric.ai_models.embedding_models.embedding_model import EmbeddingModelPublic
 @pytest.fixture
 def actor():
     return MagicMock()
@@ -253,3 +253,124 @@ async def test_update_space_with_inaccessible_models_raises_unauthorized(service
             id=TEST_UUID,
             completion_model_ids=[accessible_model.id, inaccessible_model.id]
         )
+
+async def test_analyze_update_shows_unavailable_completion_models(service: SpaceService):
+    """Test that analyze_update shows unavailable completion models."""
+    security_level_low = SecurityLevel(
+        id=TEST_UUID,
+        tenant_id=TEST_UUID,
+        name="Security Level Low",
+        description="Test security level low",
+        value=1,
+    )
+    security_level_high = SecurityLevel(
+        id=uuid4(),
+        tenant_id=TEST_UUID,
+        name="Security Level High",
+        description="Test security level high",
+        value=2,
+    )
+    completion_model_low = TEST_MODEL_GPT4
+    completion_model_low.security_level_id = security_level_low.id
+    completion_model_high = TEST_MODEL_CHATGPT
+    completion_model_high.security_level_id = security_level_high.id
+
+    space = Space(
+        id=TEST_UUID,
+        tenant_id=TEST_UUID,
+        user_id=None,
+        name="Test Space",
+        description=None,
+        embedding_models=[],
+        completion_models=[completion_model_low],
+        assistants=[],
+        services=[],
+        websites=[],
+        groups=[],
+        members={TEST_USER.id: MagicMock(role=SpaceRoleValue.ADMIN)},
+        default_assistant=None,
+        apps=[],
+        security_level=security_level_low,
+    )
+
+    completion_model_low_public = CompletionModelPublic(
+        **completion_model_low.model_dump(),
+        is_locked=False,
+        can_access=True,
+        security_level=security_level_low,
+    )
+
+    service.get_space = AsyncMock(return_value=space)
+    service.security_level_service.get_security_level = AsyncMock(return_value=security_level_high)
+    service.ai_models_service.get_completion_models = AsyncMock(return_value=[completion_model_low_public])
+
+    analysis = await service.analyze_update(TEST_UUID, security_level_id=security_level_high.id)
+
+    service.get_space.assert_called_with(TEST_UUID)
+    service.ai_models_service.get_completion_models.assert_called_with(id_list=[completion_model_low.id])
+    service.security_level_service.get_security_level.assert_called_with(security_level_high.id)
+    assert service.ai_models_service.get_completion_models.call_count == 1
+
+    assert analysis.unavailable_completion_models == [completion_model_low_public]
+    assert analysis.unavailable_embedding_models == []
+    assert analysis.new_security_level == security_level_high
+
+async def test_analyze_update_shows_unavailable_embedding_models(service: SpaceService):
+    """Test that analyze_update shows unavailable embedding models."""
+    security_level_low = SecurityLevel(
+        id=TEST_UUID,
+        tenant_id=TEST_UUID,
+        name="Security Level Low",
+        description="Test security level low",
+        value=1,
+    )
+    security_level_high = SecurityLevel(
+        id=uuid4(),
+        tenant_id=TEST_UUID,
+        name="Security Level High",
+        description="Test security level high",
+        value=2,
+    )
+    embedding_model_low = TEST_EMBEDDING_MODEL
+    embedding_model_low.security_level_id = security_level_low.id
+    embedding_model_high = TEST_EMBEDDING_MODEL_ADA
+    embedding_model_high.security_level_id = security_level_high.id
+
+    space = Space(
+        id=TEST_UUID,
+        tenant_id=TEST_UUID,
+        user_id=None,
+        name="Test Space",
+        description=None,
+        embedding_models=[embedding_model_low],
+        completion_models=[],
+        assistants=[],
+        services=[],
+        websites=[],
+        groups=[],
+        members={TEST_USER.id: MagicMock(role=SpaceRoleValue.ADMIN)},
+        default_assistant=None,
+        apps=[],
+        security_level=security_level_low,
+    )
+
+    embedding_model_low_public = EmbeddingModelPublic(
+        **embedding_model_low.model_dump(),
+        is_locked=False,
+        can_access=True,
+        security_level=security_level_low,
+    )
+
+    service.get_space = AsyncMock(return_value=space)
+    service.security_level_service.get_security_level = AsyncMock(return_value=security_level_high)
+    service.ai_models_service.get_embedding_model = AsyncMock(return_value=embedding_model_low_public)
+
+    analysis = await service.analyze_update(TEST_UUID, security_level_id=security_level_high.id)
+
+    service.get_space.assert_called_with(TEST_UUID)
+    service.security_level_service.get_security_level.assert_called_with(security_level_high.id)
+    service.ai_models_service.get_embedding_model.assert_called_with(embedding_model_low.id, include_non_accessible=True)
+
+    assert analysis.unavailable_completion_models == []
+    assert analysis.unavailable_embedding_models == [embedding_model_low]
+    assert analysis.new_security_level == security_level_high

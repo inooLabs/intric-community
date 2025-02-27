@@ -22,8 +22,6 @@ from intric.spaces.space_factory import SpaceFactory
 from intric.spaces.space_repo import SpaceRepository
 from intric.users.user import UserInDB
 from intric.users.user_repo import UsersRepository
-from intric.completion_models.domain.completion_model import CompletionModel
-
 
 @dataclass
 class SpaceUpdateAnalysis:
