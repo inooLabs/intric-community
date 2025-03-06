@@ -7,13 +7,19 @@
 <script lang="ts">
   import { getSpacesManager } from "$lib/features/spaces/SpacesManager";
   import { Button, Dialog, Input } from "@intric/ui";
-  import SelectEmbeddingModels from "./SelectEmbeddingModels.svelte";
+  import SelectModels from "$lib/features/ai-models/components/SelectModels.svelte";
   import EditNameAndDescription from "./EditNameAndDescription.svelte";
   import SelectCompletionModels from "./SelectCompletionModels.svelte";
   import { Page, Settings } from "$lib/components/layout";
   import SpaceStorageOverview from "./SpaceStorageOverview.svelte";
+  import SelectSecurityLevel from "./SelectSecurityLevel.svelte";
+  import type { SecurityLevel, CompletionModel, EmbeddingModel } from "@intric/intric-js";
 
-  export let data;
+  export let data: {
+    securityLevels: SecurityLevel[],
+    completionModels: CompletionModel[],
+    embeddingModels: EmbeddingModel[]
+  };
 
   const spaces = getSpacesManager();
   const currentSpace = spaces.state.currentSpace;
@@ -23,6 +29,7 @@
   let isDeleting = false;
   let showStillDeletingMessage = false;
   let deletionMessageTimeout: ReturnType<typeof setTimeout>;
+
   async function deleteSpace() {
     if (deleteConfirmation === "") return;
     if (deleteConfirmation !== $currentSpace.name) {
@@ -61,15 +68,31 @@
         <SpaceStorageOverview></SpaceStorageOverview>
       </Settings.Group>
 
-      <Settings.Group title="AI Models">
-        <SelectCompletionModels
-          selectableModels={data.completionModels.filter((model) => model.is_org_enabled)}
-        ></SelectCompletionModels>
+    {#if $currentSpace.permissions?.includes("edit")}
+      <section>
+        <SelectSecurityLevel securityLevels={data.securityLevels} embeddingModels={data.embeddingModels} completionModels={data.completionModels} />
+      </section>
+    {/if}
 
-        <SelectEmbeddingModels
+    <section class="relative">
+      <div class="relative flex flex-col gap-8 py-5 pr-6 lg:gap-12">
+        <SelectModels
+          selectableModels={data.completionModels.filter((model) => model.is_org_enabled)}
+          securityLevels={data.securityLevels}
+          modelType="completion"
+          title="Completion Models"
+          description="Choose which completion models will be available to the applications in this space."
+        />
+
+        <SelectModels
           selectableModels={data.embeddingModels.filter((model) => model.is_org_enabled)}
-        ></SelectEmbeddingModels>
-      </Settings.Group>
+          securityLevels={data.securityLevels}
+          modelType="embedding"
+          title="Embedding Models"
+          description="Choose which embedding models will be available to embed data in this space."
+        />
+      </div>
+    </section>
 
       {#if $currentSpace.permissions?.includes("delete")}
         <Settings.Group title="Danger zone">

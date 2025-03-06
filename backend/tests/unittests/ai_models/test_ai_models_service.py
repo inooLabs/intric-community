@@ -71,6 +71,7 @@ def service_with_mocks():
         embedding_model_repo=AsyncMock(),
         completion_model_repo=AsyncMock(),
         tenant_repo=AsyncMock(),
+        security_level_service=AsyncMock(),
     )
 
 

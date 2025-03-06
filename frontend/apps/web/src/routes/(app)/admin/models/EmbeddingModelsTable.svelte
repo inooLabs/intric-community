@@ -5,10 +5,12 @@
 -->
 
 <script lang="ts">
-  import type { EmbeddingModel } from "@intric/intric-js";
+  import type { EmbeddingModel, SecurityLevel } from "@intric/intric-js";
   import { Table } from "@intric/ui";
   import { createRender } from "svelte-headless-table";
   import ModelEnableSwitch from "./ModelEnableSwitch.svelte";
+  import ModelSecurityLevelSelect from "./ModelSecurityLevelSelect.svelte";
+  import ModelTile from "./ModelTile.svelte";
   import {
     default as ModelLabels,
     getLabels
@@ -18,6 +20,8 @@
   import ModelActions from "./ModelActions.svelte";
 
   export let embeddingModels: EmbeddingModel[];
+  export let securityLevels: SecurityLevel[];
+
   const table = Table.createWithResource(embeddingModels);
 
   const viewModel = table.createViewModel([
@@ -44,22 +48,30 @@
       accessor: (model) => model,
       header: "Enabled",
       cell: (item) => {
-        return createRender(ModelEnableSwitch, { model: item.value });
+        return createRender(ModelEnableSwitch, { model: item.value, modeltype: "embedding" });
       },
       plugins: {
         sort: {
           getSortValue(value) {
-            return value.is_org_enabled ? 1 : 0;
+            return value.can_access ? 1 : 0;
           }
         }
       }
     }),
     table.column({
       accessor: (model) => model,
-      header: "Details",
-      cell: (item) => {
-        return createRender(ModelLabels, { model: item.value });
-      },
+      header: "Security Level",
+      cell: (item) =>
+        createRender(ModelSecurityLevelSelect, {
+          model: item.value,
+          modeltype: "embedding",
+          securityLevels
+        })
+    }),
+    table.column({
+      accessor: (model) => model,
+      header: "Labels",
+      cell: (item) => createRender(ModelLabels, { model: item.value }),
       plugins: {
         sort: {
           disable: true
@@ -79,6 +91,15 @@
       cell: (item) => {
         return createRender(ModelActions, { model: item.value });
       }
+    }),
+    table.columnCard({
+      value: (item) => item.name,
+      cell: (item) =>
+        createRender(ModelTile, {
+          model: item.value,
+          modeltype: "embedding",
+          securityLevels
+        })
     })
   ]);
 

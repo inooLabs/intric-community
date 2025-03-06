@@ -21,7 +21,7 @@ import { initPrompts } from "./endpoints/prompts";
 import { initApps } from "./endpoints/apps";
 import { initTemplates } from "./endpoints/templates";
 import { initStorage } from "./endpoints/storage";
-
+import { initSecurityLevels } from "./endpoints/security-levels";
 /**
  * Create an Intric.js object to interact with the intric backend.
  * Requires either an api key or a user token to authenticate requests.
@@ -56,6 +56,7 @@ export function createIntric(args) {
     prompts: initPrompts(client),
     templates: initTemplates(client),
     storage: initStorage(client),
+    securityLevels: initSecurityLevels(client),
     client
   };
 }

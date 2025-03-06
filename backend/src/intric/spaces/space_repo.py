@@ -30,11 +30,12 @@ from intric.main.exceptions import NotFoundException, UniqueException
 from intric.spaces.api.space_models import SpaceMember
 from intric.spaces.space import Space
 from intric.spaces.space_factory import SpaceFactory
-
+from intric.securitylevels.security_level import SecurityLevel
 if TYPE_CHECKING:
     from intric.apps import AppRepository
     from intric.assistants.assistant import Assistant
     from intric.assistants.assistant_repo import AssistantRepository
+    from intric.securitylevels.security_level_repo import SecurityLevelRepository
     from intric.users.user import UserInDB
 
 
@@ -46,12 +47,14 @@ class SpaceRepository:
         factory: SpaceFactory,
         assistant_repo: "AssistantRepository",
         app_repo: Optional["AppRepository"],
+        security_level_repo: "SecurityLevelRepository",
     ):
         self.session = session
         self.user = user
         self.factory = factory
         self.assistant_repo = assistant_repo
         self.app_repo = app_repo
+        self.security_level_repo = security_level_repo
 
     def _options(self):
         return [
@@ -190,6 +193,12 @@ class SpaceRepository:
         # This allows the newly added members to be reflected in the space
         await self.session.refresh(space_in_db)
 
+    async def _set_security_level(
+        self, space_in_db: Spaces, security_level: SecurityLevel
+    ):
+        stmt = sa.update(Spaces).values(security_level_id=security_level.id if security_level else None).where(Spaces.id == space_in_db.id)
+        await self.session.execute(stmt)
+
     async def _set_default_assistant(
         self, space_in_db: Spaces, assistant: Optional["Assistant"]
     ):
@@ -242,7 +251,7 @@ class SpaceRepository:
         assistants = await self.assistant_repo.get_by_space(entry_in_db.id)
 
         apps = await self._get_apps(entry_in_db.id)
-
+        security_level = await self.security_level_repo.get(entry_in_db.security_level_id)
         return self.factory.create_space_from_db(
             entry_in_db,
             user=self.user,
@@ -252,6 +261,7 @@ class SpaceRepository:
             default_assistant=default_assistant,
             assistants=assistants,
             apps=apps,
+            security_level=security_level,
         )
 
     async def _get_record_with_options(self, query):
@@ -325,6 +335,7 @@ class SpaceRepository:
         await self._set_embedding_models(entry_in_db, space.embedding_models)
         await self._set_members(entry_in_db, space.members)
         await self._set_default_assistant(entry_in_db, space.default_assistant)
+        await self._set_security_level(entry_in_db, space.security_level)
 
         completion_models = await self._get_completion_models(entry_in_db)
         embedding_models = await self._get_embedding_models(entry_in_db)
@@ -336,6 +347,7 @@ class SpaceRepository:
             completion_models_in_db=completion_models,
             embedding_models_in_db=embedding_models,
             default_assistant=space.default_assistant,
+            security_level=space.security_level,
         )
 
     async def delete(self, id: UUID):

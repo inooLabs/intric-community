@@ -26,10 +26,6 @@ export interface paths {
     /** Get Prompts */
     get: operations["get_prompts_api_v1_apps__id__prompts__get"];
   };
-  "/api/v1/apps/{id}/publish/": {
-    /** Publish App */
-    post: operations["publish_app_api_v1_apps__id__publish__post"];
-  };
   "/api/v1/app-runs/{id}/": {
     /** Get App Run */
     get: operations["get_app_run_api_v1_app_runs__id___get"];
@@ -238,14 +234,6 @@ export interface paths {
     /** Transfer Assistant To Space */
     post: operations["transfer_assistant_to_space_api_v1_assistants__id__transfer__post"];
   };
-  "/api/v1/assistants/{id}/prompts/": {
-    /** Get Prompts */
-    get: operations["get_prompts_api_v1_assistants__id__prompts__get"];
-  };
-  "/api/v1/assistants/{id}/publish/": {
-    /** Publish Assistant */
-    post: operations["publish_assistant_api_v1_assistants__id__publish__post"];
-  };
   "/api/v1/services/": {
     /** Get Services */
     get: operations["get_services_api_v1_services__get"];
@@ -362,6 +350,82 @@ export interface paths {
      * @deprecated
      */
     post: operations["update_privacy_policy_api_v1_admin_privacy_policy__post"];
+  };
+  "/api/v1/security-levels": {
+    /**
+     * List Security Levels
+     * @description List all security levels for the current tenant ordered by value.
+     *
+     * Returns:
+     *     List of security levels ordered by value.
+     *
+     * Raises:
+     *     403: If the user doesn't have permission to list security levels.
+     */
+    get: operations["list_security_levels_api_v1_security_levels_get"];
+    /**
+     * Create Security Level
+     * @description Create a new security level for the current tenant.
+     *
+     * Args:
+     *     request: The security level creation request.
+     *
+     * Returns:
+     *     The created security level.
+     *
+     * Raises:
+     *     400: If the request is invalid.
+     *     409: If a security level with the same name already exists for this tenant.
+     */
+    post: operations["create_security_level_api_v1_security_levels_post"];
+  };
+  "/api/v1/security-levels/{id}": {
+    /**
+     * Get Security Level
+     * @description Get a security level by ID.
+     *
+     * Args:
+     *     id: The ID of the security level.
+     *
+     * Returns:
+     *     The security level.
+     *
+     * Raises:
+     *     403: If the user doesn't have permission to view the security level.
+     *     404: If the security level doesn't exist or belongs to a different tenant.
+     */
+    get: operations["get_security_level_api_v1_security_levels__id__get"];
+    /**
+     * Delete Security Level
+     * @description Delete a security level.
+     *
+     * Args:
+     *     id: The ID of the security level to delete.
+     *
+     * Raises:
+     *     403: If the user doesn't have permission to delete the security level.
+     *     404: If the security level doesn't exist or belongs to a different tenant.
+     *     409: If the security level is in use by any spaces or models.
+     */
+    delete: operations["delete_security_level_api_v1_security_levels__id__delete"];
+    /**
+     * Update Security Level
+     * @description Update a security level.
+     *
+     * Args:
+     *     id: The ID of the security level to update.
+     *     request: The update request.
+     *
+     * Returns:
+     *     The updated security level.
+     *
+     * Raises:
+     *     400: If the request is invalid.
+     *     403: If the user doesn't have permission to update the security level.
+     *     404: If the security level doesn't exist or belongs to a different tenant.
+     *     409: If updating the name would create a duplicate within the tenant.
+     */
+    patch: operations["update_security_level_api_v1_security_levels__id__patch"];
   };
   "/api/v1/jobs/": {
     /** Get Jobs */
@@ -483,6 +547,15 @@ export interface paths {
     /** Get Personal Space */
     get: operations["get_personal_space_api_v1_spaces_type_personal__get"];
   };
+  "/api/v1/spaces/{id}/update/dryrun/": {
+    /**
+     * Update Space Dryrun
+     * @description Analyze the impact of updating a space's properties without actually applying the changes.
+     * Currently supports:
+     * - Security level changes: Shows which models would be affected
+     */
+    post: operations["update_space_dryrun_api_v1_spaces__id__update_dryrun__post"];
+  };
   "/api/v1/dashboard/": {
     /** Get Dashboard */
     get: operations["get_dashboard_api_v1_dashboard__get"];
@@ -521,39 +594,12 @@ export interface paths {
     /** Get Info Blobs */
     get: operations["get_info_blobs_api_v1_websites__id__info_blobs__get"];
   };
-  "/api/v1/prompts/{id}/": {
-    /** Get Prompt */
-    get: operations["get_prompt_api_v1_prompts__id___get"];
-    /** Delete Prompt */
-    delete: operations["delete_prompt_api_v1_prompts__id___delete"];
-    /** Update Prompt Description */
-    patch: operations["update_prompt_description_api_v1_prompts__id___patch"];
-  };
   "/api/v1/templates/apps/": {
     /**
      * Get Templates
      * @description Get all app templates
      */
     get: operations["get_templates_api_v1_templates_apps__get"];
-    /** Create App Template */
-    post: operations["create_app_template_api_v1_templates_apps__post"];
-  };
-  "/api/v1/templates/apps/admin/": {
-    /**
-     * Get Templates Admin
-     * @description Get all app templates from Admin
-     */
-    get: operations["get_templates_admin_api_v1_templates_apps_admin__get"];
-  };
-  "/api/v1/templates/apps/{id}": {
-    /** Get App Template */
-    get: operations["get_app_template_api_v1_templates_apps__id__get"];
-  };
-  "/api/v1/templates/apps/{id}/": {
-    /** Update App Template */
-    put: operations["update_app_template_api_v1_templates_apps__id___put"];
-    /** Delete App Template */
-    delete: operations["delete_app_template_api_v1_templates_apps__id___delete"];
   };
   "/api/v1/templates/assistants/": {
     /**
@@ -561,23 +607,6 @@ export interface paths {
      * @description Get all assistant templates
      */
     get: operations["get_templates_api_v1_templates_assistants__get"];
-    /** Create Assistant Template */
-    post: operations["create_assistant_template_api_v1_templates_assistants__post"];
-  };
-  "/api/v1/templates/assistants/admin/": {
-    /**
-     * Get Templates Admin
-     * @description Get all assistant templates from Admin
-     */
-    get: operations["get_templates_admin_api_v1_templates_assistants_admin__get"];
-  };
-  "/api/v1/templates/assistants/{id}/": {
-    /** Get Assistant Template */
-    get: operations["get_assistant_template_api_v1_templates_assistants__id___get"];
-    /** Update Assistant Template */
-    put: operations["update_assistant_template_api_v1_templates_assistants__id___put"];
-    /** Delete Assistant Template */
-    delete: operations["delete_assistant_template_api_v1_templates_assistants__id___delete"];
   };
   "/api/v1/templates/": {
     /**
@@ -594,135 +623,17 @@ export interface paths {
     /** Get Spaces */
     get: operations["get_spaces_api_v1_storage_spaces__get"];
   };
-  "/api/v1/widgets/": {
-    /** Get Tenant Widgets */
-    get: operations["get_tenant_widgets_api_v1_widgets__get"];
-    /** Add Widget */
-    post: operations["add_widget_api_v1_widgets__post"];
+  "/api/v1/integrations/": {
+    /** Get Integrations */
+    get: operations["get_integrations_api_v1_integrations__get"];
   };
-  "/api/v1/widgets/{id}/": {
-    /** Get Widget */
-    get: operations["get_widget_api_v1_widgets__id___get"];
-    /** Update Widget */
-    post: operations["update_widget_api_v1_widgets__id___post"];
-    /** Delete Widget */
-    delete: operations["delete_widget_api_v1_widgets__id___delete"];
+  "/api/v1/integrations/tenant/": {
+    /** Get Tenant Integrations */
+    get: operations["get_tenant_integrations_api_v1_integrations_tenant__get"];
   };
-  "/api/v1/widgets/{id}/sessions/": {
-    /** Ask Assistant */
-    post: operations["ask_assistant_api_v1_widgets__id__sessions__post"];
-  };
-  "/api/v1/widgets/{id}/sessions/{session_id}/": {
-    /** Ask Followup */
-    post: operations["ask_followup_api_v1_widgets__id__sessions__session_id___post"];
-  };
-  "/api/v1/widgets/settings/privacy-policy/": {
-    /** Get Privacy Policy */
-    get: operations["get_privacy_policy_api_v1_widgets_settings_privacy_policy__get"];
-    /** Set Privacy Policy */
-    post: operations["set_privacy_policy_api_v1_widgets_settings_privacy_policy__post"];
-  };
-  "/api/v1/sysadmin/users/": {
-    /** Get All Users */
-    get: operations["get_all_users_api_v1_sysadmin_users__get"];
-    /** Register New User */
-    post: operations["register_new_user_api_v1_sysadmin_users__post"];
-  };
-  "/api/v1/sysadmin/users/{user_id}/": {
-    /** Get User */
-    get: operations["get_user_api_v1_sysadmin_users__user_id___get"];
-    /**
-     * Update User
-     * @description Omitted fields are not updated.
-     */
-    post: operations["update_user_api_v1_sysadmin_users__user_id___post"];
-    /** Delete User */
-    delete: operations["delete_user_api_v1_sysadmin_users__user_id___delete"];
-  };
-  "/api/v1/sysadmin/tenants/": {
-    /** Get Tenants */
-    get: operations["get_tenants_api_v1_sysadmin_tenants__get"];
-    /** Create Tenant */
-    post: operations["create_tenant_api_v1_sysadmin_tenants__post"];
-  };
-  "/api/v1/sysadmin/tenants/{id}/": {
-    /** Update Tenant */
-    post: operations["update_tenant_api_v1_sysadmin_tenants__id___post"];
-    /** Delete Tenant By Id */
-    delete: operations["delete_tenant_by_id_api_v1_sysadmin_tenants__id___delete"];
-  };
-  "/api/v1/sysadmin/predefined-roles/": {
-    /** Get Predefined Roles */
-    get: operations["get_predefined_roles_api_v1_sysadmin_predefined_roles__get"];
-  };
-  "/api/v1/sysadmin/crawl-all-weekly-websites/": {
-    /** Crawl All Weekly Websites */
-    post: operations["crawl_all_weekly_websites_api_v1_sysadmin_crawl_all_weekly_websites__post"];
-  };
-  "/api/v1/sysadmin/embedding-models/": {
-    /** Get Embedding Models */
-    get: operations["get_embedding_models_api_v1_sysadmin_embedding_models__get"];
-  };
-  "/api/v1/sysadmin/completion-models/": {
-    /** Get Completion Models */
-    get: operations["get_completion_models_api_v1_sysadmin_completion_models__get"];
-  };
-  "/api/v1/sysadmin/tenants/{id}/completion-models/{completion_model_id}/": {
-    /** Enable Completion Model */
-    post: operations["enable_completion_model_api_v1_sysadmin_tenants__id__completion_models__completion_model_id___post"];
-  };
-  "/api/v1/sysadmin/tenants/{id}/embedding-models/{embedding_model_id}/": {
-    /** Enable Embedding Model */
-    post: operations["enable_embedding_model_api_v1_sysadmin_tenants__id__embedding_models__embedding_model_id___post"];
-  };
-  "/api/v1/sysadmin/spaces/import/": {
-    /** Create Space And Import */
-    post: operations["create_space_and_import_api_v1_sysadmin_spaces_import__post"];
-  };
-  "/api/v1/sysadmin/migrations/migrate-to-spaces/": {
-    /** Migrate To Spaces */
-    post: operations["migrate_to_spaces_api_v1_sysadmin_migrations_migrate_to_spaces__post"];
-  };
-  "/api/v1/sysadmin/allowed-origins/": {
-    /** Get Origins */
-    get: operations["get_origins_api_v1_sysadmin_allowed_origins__get"];
-    /** Add Origin */
-    post: operations["add_origin_api_v1_sysadmin_allowed_origins__post"];
-  };
-  "/api/v1/sysadmin/allowed-origins/{id}/": {
-    /** Delete Origin */
-    delete: operations["delete_origin_api_v1_sysadmin_allowed_origins__id___delete"];
-  };
-  "/api/v1/modules/": {
-    /** Get Modules */
-    get: operations["get_modules_api_v1_modules__get"];
-    /** Add Module */
-    post: operations["add_module_api_v1_modules__post"];
-  };
-  "/api/v1/modules/{tenant_id}/": {
-    /**
-     * Add Module To Tenant
-     * @description Value is a list of module `id`'s to add to the `tenant_id`.
-     */
-    post: operations["add_module_to_tenant_api_v1_modules__tenant_id___post"];
-  };
-  "/api/v1/roles/permissions/": {
-    /** Get Permissions */
-    get: operations["get_permissions_api_v1_roles_permissions__get"];
-  };
-  "/api/v1/roles/": {
-    /** Get Roles */
-    get: operations["get_roles_api_v1_roles__get"];
-    /** Create Role */
-    post: operations["create_role_api_v1_roles__post"];
-  };
-  "/api/v1/roles/{role_id}/": {
-    /** Get Role By Id */
-    get: operations["get_role_by_id_api_v1_roles__role_id___get"];
-    /** Update Role */
-    post: operations["update_role_api_v1_roles__role_id___post"];
-    /** Delete Role By Id */
-    delete: operations["delete_role_by_id_api_v1_roles__role_id___delete"];
+  "/api/v1/integrations/me/": {
+    /** Get User Integrations */
+    get: operations["get_user_integrations_api_v1_integrations_me__get"];
   };
   "/version": {
     /** Get Version */
@@ -765,35 +676,6 @@ export interface components {
         [key: string]: string;
       }[];
     };
-    /** AllowedOriginCreate */
-    AllowedOriginCreate: {
-      /** Url */
-      url: string;
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-    };
-    /** AllowedOriginInDB */
-    AllowedOriginInDB: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Url */
-      url: string;
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-    };
     /** AllowedOriginPublic */
     AllowedOriginPublic: {
       /** Created At */
@@ -814,17 +696,6 @@ export interface components {
       truncated_key: string;
       /** Key */
       key: string;
-    };
-    /** ApiKeyInDB */
-    ApiKeyInDB: {
-      /** Truncated Key */
-      truncated_key: string;
-      /** Key */
-      key: string;
-      /** User Id */
-      user_id: string | null;
-      /** Assistant Id */
-      assistant_id: string | null;
     };
     /** AppInTemplatePublic */
     AppInTemplatePublic: {
@@ -941,29 +812,6 @@ export interface components {
        */
       user_id: string;
     };
-    /** AppTemplateCreate */
-    AppTemplateCreate: {
-      /** Name */
-      name: string;
-      /** Description */
-      description: string;
-      /** Category */
-      category: string;
-      /** Prompt */
-      prompt: string;
-      /** Organization */
-      organization?: string | null;
-      /**
-       * Completion Model Kwargs
-       * @default {}
-       */
-      completion_model_kwargs?: Record<string, never> | null;
-      wizard: components["schemas"]["AppTemplateWizard"];
-      /** Input Type */
-      input_type: string;
-      /** Input Description */
-      input_description: string | null;
-    };
     /** AppTemplateListPublic */
     AppTemplateListPublic: {
       /** Items */
@@ -1011,29 +859,6 @@ export interface components {
       type: "app";
       wizard: components["schemas"]["AppTemplateWizard"];
       organization: components["schemas"]["AppTemplateOrganization"];
-    };
-    /** AppTemplateUpdate */
-    AppTemplateUpdate: {
-      /** Name */
-      name: string;
-      /** Description */
-      description: string;
-      /** Category */
-      category: string;
-      /** Prompt */
-      prompt: string;
-      /** Organization */
-      organization?: string | null;
-      /**
-       * Completion Model Kwargs
-       * @default {}
-       */
-      completion_model_kwargs?: Record<string, never> | null;
-      wizard: components["schemas"]["AppTemplateWizard"];
-      /** Input Type */
-      input_type: string;
-      /** Input Description */
-      input_description: string | null;
     };
     /** AppTemplateWizard */
     AppTemplateWizard: {
@@ -1244,25 +1069,6 @@ export interface components {
        */
       published?: boolean;
     };
-    /** AssistantTemplateCreate */
-    AssistantTemplateCreate: {
-      /** Name */
-      name: string;
-      /** Description */
-      description: string;
-      /** Category */
-      category: string;
-      /** Prompt */
-      prompt: string;
-      /** Organization */
-      organization?: string | null;
-      /**
-       * Completion Model Kwargs
-       * @default {}
-       */
-      completion_model_kwargs?: Record<string, never> | null;
-      wizard: components["schemas"]["AssistantTemplateWizard"];
-    };
     /** AssistantTemplateListPublic */
     AssistantTemplateListPublic: {
       /** Items */
@@ -1310,25 +1116,6 @@ export interface components {
       type: "assistant";
       wizard: components["schemas"]["AssistantTemplateWizard"];
       organization: components["schemas"]["AssistantTemplateOrganization"];
-    };
-    /** AssistantTemplateUpdate */
-    AssistantTemplateUpdate: {
-      /** Name */
-      name: string;
-      /** Description */
-      description: string;
-      /** Category */
-      category: string;
-      /** Prompt */
-      prompt: string;
-      /** Organization */
-      organization?: string | null;
-      /**
-       * Completion Model Kwargs
-       * @default {}
-       */
-      completion_model_kwargs?: Record<string, never> | null;
-      wizard: components["schemas"]["AssistantTemplateWizard"];
     };
     /** AssistantTemplateWizard */
     AssistantTemplateWizard: {
@@ -1421,6 +1208,8 @@ export interface components {
        * @default false
        */
       is_org_default?: boolean;
+      /** Security Level Id */
+      security_level_id?: string | null;
     };
     /**
      * CompletionModelFamily
@@ -1472,6 +1261,8 @@ export interface components {
        * @default false
        */
       is_org_default?: boolean;
+      /** Security Level Id */
+      security_level_id?: string | null;
       /**
        * Can Access
        * @default false
@@ -1482,6 +1273,7 @@ export interface components {
        * @default true
        */
       is_locked?: boolean;
+      security_level?: components["schemas"]["SecurityLevelPublic"] | null;
     };
     /** CompletionModelPublicAppTemplate */
     CompletionModelPublicAppTemplate: {
@@ -1541,6 +1333,8 @@ export interface components {
       is_org_enabled?: boolean | null;
       /** Is Org Default */
       is_org_default?: boolean | null;
+      /** Security Level Id */
+      security_level_id?: string | null;
     };
     /** Counts */
     Counts: {
@@ -1608,32 +1402,6 @@ export interface components {
      * @enum {string}
      */
     CrawlType: "crawl" | "sitemap";
-    /** CreateAndImportSpaceRequest */
-    CreateAndImportSpaceRequest: {
-      /** Name */
-      name: string;
-      embedding_model: components["schemas"]["ModelId"];
-      /**
-       * Assistants
-       * @default []
-       */
-      assistants?: components["schemas"]["ModelId"][];
-      /**
-       * Groups
-       * @default []
-       */
-      groups?: components["schemas"]["ModelId"][];
-      /**
-       * Websites
-       * @default []
-       */
-      websites?: components["schemas"]["ModelId"][];
-      /**
-       * Members
-       * @default []
-       */
-      members?: components["schemas"]["AddSpaceMemberRequest"][];
-    };
     /** CreateGroupRequest */
     CreateGroupRequest: {
       /** Name */
@@ -1644,18 +1412,24 @@ export interface components {
     CreateSpaceAppRequest: {
       /** Name */
       name: string;
+      /** Security Level Id */
+      security_level_id?: string | null;
       from_template?: components["schemas"]["TemplateCreate"] | null;
     };
     /** CreateSpaceAssistantRequest */
     CreateSpaceAssistantRequest: {
       /** Name */
       name: string;
+      /** Security Level Id */
+      security_level_id?: string | null;
       from_template?: components["schemas"]["TemplateCreate"] | null;
     };
     /** CreateSpaceGroupsRequest */
     CreateSpaceGroupsRequest: {
       /** Name */
       name: string;
+      /** Security Level Id */
+      security_level_id?: string | null;
       embedding_model?: components["schemas"]["ModelId"] | null;
     };
     /** CreateSpaceGroupsResponse */
@@ -1678,11 +1452,15 @@ export interface components {
     CreateSpaceRequest: {
       /** Name */
       name: string;
+      /** Security Level Id */
+      security_level_id?: string | null;
     };
     /** CreateSpaceServiceRequest */
     CreateSpaceServiceRequest: {
       /** Name */
       name: string;
+      /** Security Level Id */
+      security_level_id?: string | null;
     };
     /** CreateSpaceServiceResponse */
     CreateSpaceServiceResponse: {
@@ -1766,14 +1544,35 @@ export interface components {
        * @description List of items returned in the response
        */
       items: components["schemas"]["SessionMetadataPublic"][];
-      /** Total Count */
-      total_count: number;
       /** Limit */
       limit?: number | null;
       /** Next Cursor */
       next_cursor?: string | null;
       /** Previous Cursor */
       previous_cursor?: string | null;
+      /** Total Count */
+      total_count: number;
+      /**
+       * Count
+       * @description Number of items returned in the response
+       */
+      count: number;
+    };
+    /** CursorPaginatedResponse[UserSparse] */
+    CursorPaginatedResponse_UserSparse_: {
+      /**
+       * Items
+       * @description List of items returned in the response
+       */
+      items: components["schemas"]["UserSparse"][];
+      /** Limit */
+      limit?: number | null;
+      /** Next Cursor */
+      next_cursor?: string | null;
+      /** Previous Cursor */
+      previous_cursor?: string | null;
+      /** Total Count */
+      total_count: number;
       /**
        * Count
        * @description Number of items returned in the response
@@ -1858,41 +1657,6 @@ export interface components {
       /** Success */
       success: boolean;
     };
-    /** EmbeddingModel */
-    EmbeddingModel: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Name */
-      name: string;
-      family: components["schemas"]["EmbeddingModelFamily"];
-      /** Is Deprecated */
-      is_deprecated: boolean;
-      /** Open Source */
-      open_source: boolean;
-      /** Dimensions */
-      dimensions?: number | null;
-      /** Max Input */
-      max_input?: number | null;
-      /** Hf Link */
-      hf_link?: string | null;
-      stability: components["schemas"]["ModelStability"];
-      hosting: components["schemas"]["ModelHostingLocation"];
-      /** Description */
-      description?: string | null;
-      org?: components["schemas"]["Orgs"] | null;
-      /**
-       * Is Org Enabled
-       * @default false
-       */
-      is_org_enabled?: boolean;
-    };
     /**
      * EmbeddingModelFamily
      * @enum {string}
@@ -1932,6 +1696,8 @@ export interface components {
        * @default false
        */
       is_org_enabled?: boolean;
+      /** Security Level Id */
+      security_level_id?: string | null;
       /**
        * Can Access
        * @default false
@@ -1942,6 +1708,7 @@ export interface components {
        * @default true
        */
       is_locked?: boolean;
+      security_level?: components["schemas"]["SecurityLevelPublic"] | null;
     };
     /** EmbeddingModelPublicBase */
     EmbeddingModelPublicBase: {
@@ -2010,6 +1777,8 @@ export interface components {
        * @default false
        */
       is_org_enabled?: boolean | null;
+      /** Security Level Id */
+      security_level_id?: string | null;
     };
     /**
      * ErrorCodes
@@ -2264,6 +2033,25 @@ export interface components {
       | "audio-upload"
       | "audio-recorder"
       | "image-upload";
+    /** Integration */
+    Integration: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+    };
+    /** IntegrationList */
+    IntegrationList: {
+      /** Items */
+      items: components["schemas"]["Integration"][];
+      /** Count */
+      count: number;
+    };
     /** JobPublic */
     JobPublic: {
       /** Created At */
@@ -2389,31 +2177,6 @@ export interface components {
      * @enum {string}
      */
     ModelStability: "stable" | "experimental";
-    /** ModuleBase */
-    ModuleBase: {
-      /** Name */
-      name: components["schemas"]["Modules"] | string;
-    };
-    /** ModuleInDB */
-    ModuleInDB: {
-      /** Name */
-      name: components["schemas"]["Modules"] | string;
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-    };
-    /**
-     * Modules
-     * @description Any change to these enums will result in database changes
-     * @enum {string}
-     */
-    Modules: "eu_hosting" | "intric-applications";
     /** OpenIdConnectLogin */
     OpenIdConnectLogin: {
       /** Code */
@@ -2553,19 +2316,6 @@ export interface components {
        */
       count: number;
     };
-    /** PaginatedResponse[AllowedOriginInDB] */
-    PaginatedResponse_AllowedOriginInDB_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["AllowedOriginInDB"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
     /** PaginatedResponse[AllowedOriginPublic] */
     PaginatedResponse_AllowedOriginPublic_: {
       /**
@@ -2638,19 +2388,6 @@ export interface components {
        * @description List of items returned in the response
        */
       items: components["schemas"]["EmbeddingModelPublic"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
-    /** PaginatedResponse[EmbeddingModel] */
-    PaginatedResponse_EmbeddingModel_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["EmbeddingModel"][];
       /**
        * Count
        * @description Number of items returned in the response
@@ -2735,32 +2472,6 @@ export interface components {
        */
       count: number;
     };
-    /** PaginatedResponse[ModuleInDB] */
-    PaginatedResponse_ModuleInDB_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["ModuleInDB"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
-    /** PaginatedResponse[PredefinedRolePublic] */
-    PaginatedResponse_PredefinedRolePublic_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["PredefinedRolePublic"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
     /** PaginatedResponse[PromptSparse] */
     PaginatedResponse_PromptSparse_: {
       /**
@@ -2768,19 +2479,6 @@ export interface components {
        * @description List of items returned in the response
        */
       items: components["schemas"]["PromptSparse"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
-    /** PaginatedResponse[RolePublic] */
-    PaginatedResponse_RolePublic_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["RolePublic"][];
       /**
        * Count
        * @description Number of items returned in the response
@@ -2852,19 +2550,6 @@ export interface components {
        */
       count: number;
     };
-    /** PaginatedResponse[TenantInDB] */
-    PaginatedResponse_TenantInDB_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["TenantInDB"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
     /** PaginatedResponse[UserAdminView] */
     PaginatedResponse_UserAdminView_: {
       /**
@@ -2891,32 +2576,6 @@ export interface components {
        */
       count: number;
     };
-    /** PaginatedResponse[UserInDB] */
-    PaginatedResponse_UserInDB_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["UserInDB"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
-    /** PaginatedResponse[UserSparse] */
-    PaginatedResponse_UserSparse_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["UserSparse"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
     /** PaginatedResponse[WebsitePublic] */
     PaginatedResponse_WebsitePublic_: {
       /**
@@ -2924,19 +2583,6 @@ export interface components {
        * @description List of items returned in the response
        */
       items: components["schemas"]["WebsitePublic"][];
-      /**
-       * Count
-       * @description Number of items returned in the response
-       */
-      count: number;
-    };
-    /** PaginatedResponse[WidgetPublic] */
-    PaginatedResponse_WidgetPublic_: {
-      /**
-       * Items
-       * @description List of items returned in the response
-       */
-      items: components["schemas"]["WidgetPublic"][];
       /**
        * Count
        * @description Number of items returned in the response
@@ -2999,6 +2645,24 @@ export interface components {
       predefined_role?: components["schemas"]["ModelId"] | null;
       state?: components["schemas"]["UserState"] | null;
     };
+    /** PartialSecurityLevelUpdatePublic */
+    PartialSecurityLevelUpdatePublic: {
+      /**
+       * Name
+       * @description Name of the security level
+       */
+      name?: string | null;
+      /**
+       * Description
+       * @description Description of the security level
+       */
+      description?: string | null;
+      /**
+       * Value
+       * @description Numeric value determining the security level hierarchy
+       */
+      value?: number | null;
+    };
     /** PartialServiceUpdatePublic */
     PartialServiceUpdatePublic: {
       /** Output Format */
@@ -3020,6 +2684,8 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
+      /** Security Level Id */
+      security_level_id?: string | null;
       /** Embedding Models */
       embedding_models?: components["schemas"]["ModelId"][] | null;
       /** Completion Models */
@@ -3039,19 +2705,6 @@ export interface components {
       update_interval?: components["schemas"]["UpdateInterval"] | null;
       embedding_model?: components["schemas"]["ModelId"] | null;
     };
-    /** PartialWidgetUpdatePublic */
-    PartialWidgetUpdatePublic: {
-      /** Name */
-      name?: string | null;
-      /** Title */
-      title?: string | null;
-      /** Bot Introduction */
-      bot_introduction?: string | null;
-      /** Color */
-      color?: string | null;
-      size?: components["schemas"]["Size"] | null;
-      assistant?: components["schemas"]["ModelId"] | null;
-    };
     /**
      * Permission
      * @enum {string}
@@ -3066,28 +2719,6 @@ export interface components {
       | "editor"
       | "admin"
       | "websites";
-    /** PermissionPublic */
-    PermissionPublic: {
-      name: components["schemas"]["Permission"];
-      /** Description */
-      description: string;
-    };
-    /** PredefinedRoleInDB */
-    PredefinedRoleInDB: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /** Name */
-      name: string;
-      /** Permissions */
-      permissions: components["schemas"]["Permission"][];
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-    };
     /** PredefinedRolePublic */
     PredefinedRolePublic: {
       /** Created At */
@@ -3172,11 +2803,6 @@ export interface components {
       is_selected: boolean;
       user: components["schemas"]["UserSparse"];
     };
-    /** PromptUpdateRequest */
-    PromptUpdateRequest: {
-      /** Description */
-      description?: string | null;
-    };
     /** PropUserInvite */
     PropUserInvite: {
       predefined_role?: components["schemas"]["ModelId"] | null;
@@ -3215,34 +2841,6 @@ export interface components {
      * @enum {string}
      */
     ResourcePermission: "read" | "create" | "edit" | "delete" | "add" | "remove" | "publish";
-    /** RoleCreateRequest */
-    RoleCreateRequest: {
-      /** Name */
-      name: string;
-      /** Permissions */
-      permissions: components["schemas"]["Permission"][];
-    };
-    /** RoleInDB */
-    RoleInDB: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Name */
-      name: string;
-      /** Permissions */
-      permissions: components["schemas"]["Permission"][];
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-    };
     /** RolePublic */
     RolePublic: {
       /** Created At */
@@ -3258,18 +2856,6 @@ export interface components {
       name: string;
       /** Permissions */
       permissions: components["schemas"]["Permission"][];
-    };
-    /** RoleUpdateRequest */
-    RoleUpdateRequest: {
-      /** Name */
-      name?: string | null;
-      /** Permissions */
-      permissions?: components["schemas"]["Permission"][] | null;
-    };
-    /** RolesPaginatedResponse */
-    RolesPaginatedResponse: {
-      roles: components["schemas"]["PaginatedResponse_RolePublic_"];
-      predefined_roles: components["schemas"]["PaginatedResponse_PredefinedRolePublic_"];
     };
     /** RunAppRequest */
     RunAppRequest: {
@@ -3290,6 +2876,69 @@ export interface components {
        * @default []
        */
       files?: components["schemas"]["ModelId"][];
+    };
+    /**
+     * SecurityLevelCreatePublic
+     * @description Request model for creating a new security level.
+     */
+    SecurityLevelCreatePublic: {
+      /**
+       * Name
+       * @description Name of the security level
+       */
+      name: string;
+      /**
+       * Description
+       * @description Description of the security level
+       */
+      description?: string | null;
+      /**
+       * Value
+       * @description Numeric value determining the security level hierarchy
+       */
+      value: number;
+    };
+    /**
+     * SecurityLevelPublic
+     * @description Complete security level information including relationships.
+     */
+    SecurityLevelPublic: {
+      /** Created At */
+      created_at?: string | null;
+      /** Updated At */
+      updated_at?: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Description */
+      description: string | null;
+      /** Value */
+      value: number;
+    };
+    /**
+     * SecurityLevelSparse
+     * @description Basic security level information.
+     */
+    SecurityLevelSparse: {
+      /** Created At */
+      created_at?: string | null;
+      /** Updated At */
+      updated_at?: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Description */
+      description: string | null;
+      /** Value */
+      value: number;
     };
     /** SemanticSearchRequest */
     SemanticSearchRequest: {
@@ -3511,11 +3160,6 @@ export interface components {
        */
       chatbot_widget?: Record<string, never>;
     };
-    /**
-     * Size
-     * @enum {string}
-     */
-    Size: "small" | "medium" | "large";
     /** SpaceDashboard */
     SpaceDashboard: {
       /**
@@ -3538,6 +3182,7 @@ export interface components {
       description: string | null;
       /** Personal */
       personal: boolean;
+      security_level: components["schemas"]["SecurityLevelSparse"] | null;
       applications: components["schemas"]["Applications"];
     };
     /** SpaceMember */
@@ -3582,6 +3227,7 @@ export interface components {
       description: string | null;
       /** Personal */
       personal: boolean;
+      security_level: components["schemas"]["SecurityLevelSparse"] | null;
       applications: components["schemas"]["Applications"];
       /** Embedding Models */
       embedding_models: components["schemas"]["EmbeddingModelSparse"][];
@@ -3626,6 +3272,27 @@ export interface components {
       description: string | null;
       /** Personal */
       personal: boolean;
+      security_level: components["schemas"]["SecurityLevelSparse"] | null;
+    };
+    /**
+     * SpaceUpdateDryRunRequest
+     * @description Request to analyze the impact of updating a space's properties.
+     */
+    SpaceUpdateDryRunRequest: {
+      /** Security Level Id */
+      security_level_id: string | null;
+    };
+    /**
+     * SpaceUpdateDryRunResponse
+     * @description Response containing the impact analysis of updating a space's properties.
+     */
+    SpaceUpdateDryRunResponse: {
+      /** Unavailable Completion Models */
+      unavailable_completion_models: components["schemas"]["CompletionModelPublic"][];
+      /** Unavailable Embedding Models */
+      unavailable_embedding_models: components["schemas"]["EmbeddingModelPublic"][];
+      current_security_level: components["schemas"]["SecurityLevelSparse"] | null;
+      new_security_level: components["schemas"]["SecurityLevelSparse"] | null;
     };
     /**
      * Status
@@ -3739,61 +3406,26 @@ export interface components {
       /** Description */
       description?: string | null;
     };
-    /** TenantBase */
-    TenantBase: {
-      /** Name */
-      name: string;
-      /** Display Name */
-      display_name?: string | null;
-      /**
-       * Quota Limit
-       * @description Size in bytes. Default is 10 GB
-       * @default 10737418240
-       */
-      quota_limit?: number;
-      /** Domain */
-      domain?: string | null;
-      /** Zitadel Org Id */
-      zitadel_org_id?: string | null;
-      /**
-       * Provisioning
-       * @default false
-       */
-      provisioning?: boolean;
-    };
-    /** TenantInDB */
-    TenantInDB: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
+    /** TenantIntegration */
+    TenantIntegration: {
       /**
        * Id
        * Format: uuid
        */
       id: string;
-      /** Privacy Policy */
-      privacy_policy?: string | null;
       /** Name */
       name: string;
-      /** Display Name */
-      display_name?: string | null;
-      /** Quota Limit */
-      quota_limit: number;
-      /** Domain */
-      domain?: string | null;
-      /** Zitadel Org Id */
-      zitadel_org_id?: string | null;
-      /**
-       * Provisioning
-       * @default false
-       */
-      provisioning?: boolean;
-      /**
-       * Modules
-       * @default []
-       */
-      modules?: components["schemas"]["ModuleInDB"][];
+      /** Description */
+      description: string;
+      /** Enabled */
+      enabled: boolean;
+    };
+    /** TenantIntegrationList */
+    TenantIntegrationList: {
+      /** Items */
+      items: components["schemas"]["TenantIntegration"][];
+      /** Count */
+      count: number;
     };
     /** TenantPublic */
     TenantPublic: {
@@ -3818,19 +3450,6 @@ export interface components {
       provisioning?: boolean;
       /** Privacy Policy */
       privacy_policy?: string | null;
-    };
-    /** TenantUpdatePublic */
-    TenantUpdatePublic: {
-      /** Display Name */
-      display_name?: string | null;
-      /** Quota Limit */
-      quota_limit?: number | null;
-      /** Domain */
-      domain?: string | null;
-      /** Zitadel Org Id */
-      zitadel_org_id?: string | null;
-      /** Provisioning */
-      provisioning?: boolean | null;
     };
     /** ToolAssistant */
     ToolAssistant: {
@@ -3909,38 +3528,6 @@ export interface components {
        */
       predefined_roles?: components["schemas"]["ModelId"][];
     };
-    /** UserAddSuperAdmin */
-    UserAddSuperAdmin: {
-      /**
-       * Email
-       * Format: email
-       */
-      email: string;
-      /** Username */
-      username?: string | null;
-      /** Password */
-      password?: string | null;
-      /**
-       * Quota Limit
-       * @description Size in bytes
-       */
-      quota_limit?: number | null;
-      /**
-       * Roles
-       * @default []
-       */
-      roles?: components["schemas"]["ModelId"][];
-      /**
-       * Predefined Roles
-       * @default []
-       */
-      predefined_roles?: components["schemas"]["ModelId"][];
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-    };
     /** UserAdminView */
     UserAdminView: {
       /**
@@ -3979,81 +3566,6 @@ export interface components {
       predefined_roles: components["schemas"]["PredefinedRolePublic"][];
       /** User Groups */
       user_groups: components["schemas"]["UserGroupRead"][];
-    };
-    /** UserCreated */
-    UserCreated: {
-      /**
-       * Email
-       * Format: email
-       */
-      email: string;
-      /** Username */
-      username?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Password */
-      password?: string | null;
-      /** Salt */
-      salt?: string | null;
-      /**
-       * Used Tokens
-       * @default 0
-       */
-      used_tokens?: number;
-      /**
-       * Email Verified
-       * @default false
-       */
-      email_verified?: boolean;
-      /**
-       * Is Active
-       * @default true
-       */
-      is_active?: boolean;
-      state: components["schemas"]["UserState"];
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-      /** Quota Limit */
-      quota_limit?: number | null;
-      /**
-       * Roles
-       * @default []
-       */
-      roles?: components["schemas"]["RoleInDB"][];
-      /**
-       * Predefined Roles
-       * @default []
-       */
-      predefined_roles?: components["schemas"]["PredefinedRoleInDB"][];
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * User Groups
-       * @default []
-       */
-      user_groups?: components["schemas"]["UserGroupInDBRead"][];
-      tenant: components["schemas"]["TenantInDB"];
-      api_key: components["schemas"]["ApiKey"] | null;
-      /**
-       * Quota Used
-       * @default 0
-       */
-      quota_used?: number;
-      access_token: components["schemas"]["AccessToken"] | null;
-      /** Modules */
-      modules: readonly string[];
-      /** User Groups Ids */
-      user_groups_ids: readonly number[];
-      /** Permissions */
-      permissions: readonly components["schemas"]["Permission"][];
     };
     /** UserCreatedAdminView */
     UserCreatedAdminView: {
@@ -4100,20 +3612,6 @@ export interface components {
       /** Name */
       name: string;
     };
-    /** UserGroupInDBRead */
-    UserGroupInDBRead: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Name */
-      name: string;
-    };
     /** UserGroupPublic */
     UserGroupPublic: {
       /** Created At */
@@ -4157,79 +3655,26 @@ export interface components {
        */
       users?: components["schemas"]["ModelId"][];
     };
-    /** UserInDB */
-    UserInDB: {
-      /**
-       * Email
-       * Format: email
-       */
-      email: string;
-      /** Username */
-      username?: string | null;
+    /** UserIntegration */
+    UserIntegration: {
       /**
        * Id
        * Format: uuid
        */
       id: string;
-      /** Password */
-      password?: string | null;
-      /** Salt */
-      salt?: string | null;
-      /**
-       * Used Tokens
-       * @default 0
-       */
-      used_tokens?: number;
-      /**
-       * Email Verified
-       * @default false
-       */
-      email_verified?: boolean;
-      /**
-       * Is Active
-       * @default true
-       */
-      is_active?: boolean;
-      state: components["schemas"]["UserState"];
-      /**
-       * Tenant Id
-       * Format: uuid
-       */
-      tenant_id: string;
-      /** Quota Limit */
-      quota_limit?: number | null;
-      /**
-       * Roles
-       * @default []
-       */
-      roles?: components["schemas"]["RoleInDB"][];
-      /**
-       * Predefined Roles
-       * @default []
-       */
-      predefined_roles?: components["schemas"]["PredefinedRoleInDB"][];
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * User Groups
-       * @default []
-       */
-      user_groups?: components["schemas"]["UserGroupInDBRead"][];
-      tenant: components["schemas"]["TenantInDB"];
-      api_key?: components["schemas"]["ApiKeyInDB"] | null;
-      /**
-       * Quota Used
-       * @default 0
-       */
-      quota_used?: number;
-      /** Modules */
-      modules: readonly string[];
-      /** User Groups Ids */
-      user_groups_ids: readonly number[];
-      /** Permissions */
-      permissions: readonly components["schemas"]["Permission"][];
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+      /** Connected */
+      connected: boolean;
+    };
+    /** UserIntegrationList */
+    UserIntegrationList: {
+      /** Items */
+      items: components["schemas"]["UserIntegration"][];
+      /** Count */
+      count: number;
     };
     /** UserProvision */
     UserProvision: {
@@ -4442,49 +3887,6 @@ export interface components {
       user_id: string;
       embedding_model: components["schemas"]["IdAndName"];
       metadata: components["schemas"]["WebsiteMetadata"];
-    };
-    /** WidgetCreatePublic */
-    WidgetCreatePublic: {
-      /** Name */
-      name: string;
-      /** Title */
-      title: string;
-      /** Bot Introduction */
-      bot_introduction: string;
-      /**
-       * Color
-       * Format: color
-       */
-      color: string;
-      size: components["schemas"]["Size"];
-      assistant: components["schemas"]["ModelId"];
-    };
-    /** WidgetPublic */
-    WidgetPublic: {
-      /** Created At */
-      created_at?: string | null;
-      /** Updated At */
-      updated_at?: string | null;
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      /** Name */
-      name: string;
-      /** Title */
-      title: string;
-      /** Bot Introduction */
-      bot_introduction: string;
-      /**
-       * Color
-       * Format: color
-       */
-      color: string;
-      size: components["schemas"]["Size"];
-      /** Privacy Policy */
-      privacy_policy?: string | null;
-      assistant: components["schemas"]["ModelId"];
     };
     /**
      * WizardType
@@ -4804,43 +4206,6 @@ export interface operations {
       };
     };
   };
-  /** Publish App */
-  publish_app_api_v1_apps__id__publish__post: {
-    parameters: {
-      query: {
-        published: boolean;
-      };
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AppPublic"];
-        };
-      };
-      /** @description Forbidden */
-      403: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /** Get App Run */
   get_app_run_api_v1_app_runs__id___get: {
     parameters: {
@@ -4965,11 +4330,29 @@ export interface operations {
   };
   /** Get Tenant Users */
   get_tenant_users_api_v1_users__get: {
+    parameters: {
+      query?: {
+        /** @description Email of user */
+        email?: string | null;
+        /** @description Users per page */
+        limit?: number;
+        /** @description Current cursor */
+        cursor?: string | null;
+        /** @description Show previous page */
+        previous?: boolean | null;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedResponse_UserSparse_"];
+          "application/json": components["schemas"]["CursorPaginatedResponse_UserSparse_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -5890,6 +5273,8 @@ export interface operations {
                  * @default false
                  */
                 is_org_default?: boolean;
+                /** Security Level Id */
+                security_level_id?: string | null;
                 /**
                  * Can Access
                  * @default false
@@ -5900,6 +5285,7 @@ export interface operations {
                  * @default true
                  */
                 is_locked?: boolean;
+                security_level?: components["schemas"]["SecurityLevelPublic"] | null;
               };
               /** FilePublic */
               FilePublic: {
@@ -5975,6 +5361,27 @@ export interface operations {
                * @enum {string}
                */
               Orgs: "OpenAI" | "Meta" | "Microsoft" | "Anthropic";
+              /**
+               * SecurityLevelPublic
+               * @description Complete security level information including relationships.
+               */
+              SecurityLevelPublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
+                /**
+                 * Id
+                 * Format: uuid
+                 */
+                id: string;
+                /** Name */
+                name: string;
+                /** Description */
+                description: string | null;
+                /** Value */
+                value: number;
+              };
               /** UseTools */
               UseTools: {
                 /** Assistants */
@@ -6130,6 +5537,8 @@ export interface operations {
                  * @default false
                  */
                 is_org_default?: boolean;
+                /** Security Level Id */
+                security_level_id?: string | null;
                 /**
                  * Can Access
                  * @default false
@@ -6140,6 +5549,7 @@ export interface operations {
                  * @default true
                  */
                 is_locked?: boolean;
+                security_level?: components["schemas"]["SecurityLevelPublic"] | null;
               };
               /** FilePublic */
               FilePublic: {
@@ -6215,6 +5625,27 @@ export interface operations {
                * @enum {string}
                */
               Orgs: "OpenAI" | "Meta" | "Microsoft" | "Anthropic";
+              /**
+               * SecurityLevelPublic
+               * @description Complete security level information including relationships.
+               */
+              SecurityLevelPublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
+                /**
+                 * Id
+                 * Format: uuid
+                 */
+                id: string;
+                /** Name */
+                name: string;
+                /** Description */
+                description: string | null;
+                /** Value */
+                value: number;
+              };
               /** UseTools */
               UseTools: {
                 /** Assistants */
@@ -6363,65 +5794,6 @@ export interface operations {
       /** @description Successful Response */
       204: {
         content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Prompts */
-  get_prompts_api_v1_assistants__id__prompts__get: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_PromptSparse_"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Publish Assistant */
-  publish_assistant_api_v1_assistants__id__publish__post: {
-    parameters: {
-      query: {
-        published: boolean;
-      };
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AssistantPublic"];
-        };
-      };
-      /** @description Forbidden */
-      403: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
       };
       /** @description Validation Error */
       422: {
@@ -6940,6 +6312,242 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["TenantPublic"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Security Levels
+   * @description List all security levels for the current tenant ordered by value.
+   *
+   * Returns:
+   *     List of security levels ordered by value.
+   *
+   * Raises:
+   *     403: If the user doesn't have permission to list security levels.
+   */
+  list_security_levels_api_v1_security_levels_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SecurityLevelPublic"][];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Security Level
+   * @description Create a new security level for the current tenant.
+   *
+   * Args:
+   *     request: The security level creation request.
+   *
+   * Returns:
+   *     The created security level.
+   *
+   * Raises:
+   *     400: If the request is invalid.
+   *     409: If a security level with the same name already exists for this tenant.
+   */
+  create_security_level_api_v1_security_levels_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SecurityLevelCreatePublic"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["SecurityLevelPublic"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Security Level
+   * @description Get a security level by ID.
+   *
+   * Args:
+   *     id: The ID of the security level.
+   *
+   * Returns:
+   *     The security level.
+   *
+   * Raises:
+   *     403: If the user doesn't have permission to view the security level.
+   *     404: If the security level doesn't exist or belongs to a different tenant.
+   */
+  get_security_level_api_v1_security_levels__id__get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SecurityLevelPublic"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Delete Security Level
+   * @description Delete a security level.
+   *
+   * Args:
+   *     id: The ID of the security level to delete.
+   *
+   * Raises:
+   *     403: If the user doesn't have permission to delete the security level.
+   *     404: If the security level doesn't exist or belongs to a different tenant.
+   *     409: If the security level is in use by any spaces or models.
+   */
+  delete_security_level_api_v1_security_levels__id__delete: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Security Level
+   * @description Update a security level.
+   *
+   * Args:
+   *     id: The ID of the security level to update.
+   *     request: The update request.
+   *
+   * Returns:
+   *     The updated security level.
+   *
+   * Raises:
+   *     400: If the request is invalid.
+   *     403: If the user doesn't have permission to update the security level.
+   *     404: If the security level doesn't exist or belongs to a different tenant.
+   *     409: If updating the name would create a duplicate within the tenant.
+   */
+  update_security_level_api_v1_security_levels__id__patch: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PartialSecurityLevelUpdatePublic"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SecurityLevelPublic"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
         };
       };
       /** @description Validation Error */
@@ -7925,6 +7533,44 @@ export interface operations {
       };
     };
   };
+  /**
+   * Update Space Dryrun
+   * @description Analyze the impact of updating a space's properties without actually applying the changes.
+   * Currently supports:
+   * - Security level changes: Shows which models would be affected
+   */
+  update_space_dryrun_api_v1_spaces__id__update_dryrun__post: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SpaceUpdateDryRunRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SpaceUpdateDryRunResponse"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Get Dashboard */
   get_dashboard_api_v1_dashboard__get: {
     responses: {
@@ -8188,123 +7834,6 @@ export interface operations {
       };
     };
   };
-  /** Get Prompt */
-  get_prompt_api_v1_prompts__id___get: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PromptPublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Forbidden */
-      403: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Prompt */
-  delete_prompt_api_v1_prompts__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: {
-        content: never;
-      };
-      /** @description Forbidden */
-      403: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update Prompt Description */
-  update_prompt_description_api_v1_prompts__id___patch: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PromptUpdateRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PromptPublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Forbidden */
-      403: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /**
    * Get Templates
    * @description Get all app templates
@@ -8331,171 +7860,6 @@ export interface operations {
       };
     };
   };
-  /** Create App Template */
-  create_app_template_api_v1_templates_apps__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AppTemplateCreate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Get Templates Admin
-   * @description Get all app templates from Admin
-   */
-  get_templates_admin_api_v1_templates_apps_admin__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AppTemplateListPublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Get App Template */
-  get_app_template_api_v1_templates_apps__id__get: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AppTemplatePublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update App Template */
-  update_app_template_api_v1_templates_apps__id___put: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AppTemplateUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AppTemplatePublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete App Template */
-  delete_app_template_api_v1_templates_apps__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: {
-        content: never;
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /**
    * Get Templates
    * @description Get all assistant templates
@@ -8518,171 +7882,6 @@ export interface operations {
       404: {
         content: {
           "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Create Assistant Template */
-  create_assistant_template_api_v1_templates_assistants__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AssistantTemplateCreate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Get Templates Admin
-   * @description Get all assistant templates from Admin
-   */
-  get_templates_admin_api_v1_templates_assistants_admin__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AssistantTemplateListPublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Get Assistant Template */
-  get_assistant_template_api_v1_templates_assistants__id___get: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AssistantTemplatePublic"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update Assistant Template */
-  update_assistant_template_api_v1_templates_assistants__id___put: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AssistantTemplateUpdate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Assistant Template */
-  delete_assistant_template_api_v1_templates_assistants__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: {
-        content: never;
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -8723,1229 +7922,35 @@ export interface operations {
       };
     };
   };
-  /** Get Tenant Widgets */
-  get_tenant_widgets_api_v1_widgets__get: {
-    parameters: {
-      query?: {
-        assistant_id?: string;
-      };
-    };
+  /** Get Integrations */
+  get_integrations_api_v1_integrations__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedResponse_WidgetPublic_"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["IntegrationList"];
         };
       };
     };
   };
-  /** Add Widget */
-  add_widget_api_v1_widgets__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["WidgetCreatePublic"];
-      };
-    };
+  /** Get Tenant Integrations */
+  get_tenant_integrations_api_v1_integrations_tenant__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["WidgetPublic"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["TenantIntegrationList"];
         };
       };
     };
   };
-  /** Get Widget */
-  get_widget_api_v1_widgets__id___get: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
+  /** Get User Integrations */
+  get_user_integrations_api_v1_integrations_me__get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["WidgetPublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update Widget */
-  update_widget_api_v1_widgets__id___post: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PartialWidgetUpdatePublic"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["WidgetPublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Widget */
-  delete_widget_api_v1_widgets__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DeleteResponse"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Ask Assistant */
-  ask_assistant_api_v1_widgets__id__sessions__post: {
-    parameters: {
-      query?: {
-        version?: number;
-      };
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AskAssistant"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AskResponse"];
-          "text/event-stream": {
-            /**
-             * Session Id
-             * Format: uuid
-             */
-            session_id: string;
-            /** Question */
-            question: string;
-            /** Files */
-            files: components["schemas"]["FilePublic"][];
-            /** Answer */
-            answer: string;
-            /** References */
-            references: components["schemas"]["InfoBlobAskAssistantPublic"][];
-            model?: components["schemas"]["CompletionModelPublic"] | null;
-            tools: components["schemas"]["UseTools"];
-            $defs: {
-              /**
-               * CompletionModelFamily
-               * @enum {string}
-               */
-              CompletionModelFamily: "openai" | "mistral" | "vllm" | "claude" | "azure";
-              /** CompletionModelPublic */
-              CompletionModelPublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                /** Name */
-                name: string;
-                /** Nickname */
-                nickname: string;
-                family: components["schemas"]["CompletionModelFamily"];
-                /** Token Limit */
-                token_limit: number;
-                /** Is Deprecated */
-                is_deprecated: boolean;
-                /** Nr Billion Parameters */
-                nr_billion_parameters?: number | null;
-                /** Hf Link */
-                hf_link?: string | null;
-                stability: components["schemas"]["ModelStability"];
-                hosting: components["schemas"]["ModelHostingLocation"];
-                /** Open Source */
-                open_source?: boolean | null;
-                /** Description */
-                description?: string | null;
-                /** Deployment Name */
-                deployment_name?: string | null;
-                org?: components["schemas"]["Orgs"] | null;
-                /** Vision */
-                vision: boolean;
-                /**
-                 * Is Org Enabled
-                 * @default false
-                 */
-                is_org_enabled?: boolean;
-                /**
-                 * Is Org Default
-                 * @default false
-                 */
-                is_org_default?: boolean;
-                /**
-                 * Can Access
-                 * @default false
-                 */
-                can_access?: boolean;
-                /**
-                 * Is Locked
-                 * @default true
-                 */
-                is_locked?: boolean;
-              };
-              /** FilePublic */
-              FilePublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                /** Name */
-                name: string;
-                /** Mimetype */
-                mimetype: string;
-                /** Size */
-                size: number;
-              };
-              /** InfoBlobAskAssistantPublic */
-              InfoBlobAskAssistantPublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                metadata: components["schemas"]["InfoBlobMetadata"];
-                /** Group Id */
-                group_id?: string | null;
-                /** Website Id */
-                website_id?: string | null;
-                /** Score */
-                score: number;
-              };
-              /** InfoBlobMetadata */
-              InfoBlobMetadata: {
-                /** Url */
-                url?: string | null;
-                /** Title */
-                title?: string | null;
-                /**
-                 * Embedding Model Id
-                 * Format: uuid
-                 */
-                embedding_model_id: string;
-                /** Size */
-                size: number;
-              };
-              /**
-               * ModelHostingLocation
-               * @enum {string}
-               */
-              ModelHostingLocation: "usa" | "eu" | "swe";
-              /** ModelId */
-              ModelId: {
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-              };
-              /**
-               * ModelStability
-               * @enum {string}
-               */
-              ModelStability: "stable" | "experimental";
-              /**
-               * Orgs
-               * @enum {string}
-               */
-              Orgs: "OpenAI" | "Meta" | "Microsoft" | "Anthropic";
-              /** UseTools */
-              UseTools: {
-                /** Assistants */
-                assistants: components["schemas"]["ModelId"][];
-              };
-            };
-          };
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Ask Followup */
-  ask_followup_api_v1_widgets__id__sessions__session_id___post: {
-    parameters: {
-      query?: {
-        version?: number;
-      };
-      path: {
-        id: string;
-        session_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AskAssistant"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AskResponse"];
-          "text/event-stream": {
-            /**
-             * Session Id
-             * Format: uuid
-             */
-            session_id: string;
-            /** Question */
-            question: string;
-            /** Files */
-            files: components["schemas"]["FilePublic"][];
-            /** Answer */
-            answer: string;
-            /** References */
-            references: components["schemas"]["InfoBlobAskAssistantPublic"][];
-            model?: components["schemas"]["CompletionModelPublic"] | null;
-            tools: components["schemas"]["UseTools"];
-            $defs: {
-              /**
-               * CompletionModelFamily
-               * @enum {string}
-               */
-              CompletionModelFamily: "openai" | "mistral" | "vllm" | "claude" | "azure";
-              /** CompletionModelPublic */
-              CompletionModelPublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                /** Name */
-                name: string;
-                /** Nickname */
-                nickname: string;
-                family: components["schemas"]["CompletionModelFamily"];
-                /** Token Limit */
-                token_limit: number;
-                /** Is Deprecated */
-                is_deprecated: boolean;
-                /** Nr Billion Parameters */
-                nr_billion_parameters?: number | null;
-                /** Hf Link */
-                hf_link?: string | null;
-                stability: components["schemas"]["ModelStability"];
-                hosting: components["schemas"]["ModelHostingLocation"];
-                /** Open Source */
-                open_source?: boolean | null;
-                /** Description */
-                description?: string | null;
-                /** Deployment Name */
-                deployment_name?: string | null;
-                org?: components["schemas"]["Orgs"] | null;
-                /** Vision */
-                vision: boolean;
-                /**
-                 * Is Org Enabled
-                 * @default false
-                 */
-                is_org_enabled?: boolean;
-                /**
-                 * Is Org Default
-                 * @default false
-                 */
-                is_org_default?: boolean;
-                /**
-                 * Can Access
-                 * @default false
-                 */
-                can_access?: boolean;
-                /**
-                 * Is Locked
-                 * @default true
-                 */
-                is_locked?: boolean;
-              };
-              /** FilePublic */
-              FilePublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                /** Name */
-                name: string;
-                /** Mimetype */
-                mimetype: string;
-                /** Size */
-                size: number;
-              };
-              /** InfoBlobAskAssistantPublic */
-              InfoBlobAskAssistantPublic: {
-                /** Created At */
-                created_at?: string | null;
-                /** Updated At */
-                updated_at?: string | null;
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-                metadata: components["schemas"]["InfoBlobMetadata"];
-                /** Group Id */
-                group_id?: string | null;
-                /** Website Id */
-                website_id?: string | null;
-                /** Score */
-                score: number;
-              };
-              /** InfoBlobMetadata */
-              InfoBlobMetadata: {
-                /** Url */
-                url?: string | null;
-                /** Title */
-                title?: string | null;
-                /**
-                 * Embedding Model Id
-                 * Format: uuid
-                 */
-                embedding_model_id: string;
-                /** Size */
-                size: number;
-              };
-              /**
-               * ModelHostingLocation
-               * @enum {string}
-               */
-              ModelHostingLocation: "usa" | "eu" | "swe";
-              /** ModelId */
-              ModelId: {
-                /**
-                 * Id
-                 * Format: uuid
-                 */
-                id: string;
-              };
-              /**
-               * ModelStability
-               * @enum {string}
-               */
-              ModelStability: "stable" | "experimental";
-              /**
-               * Orgs
-               * @enum {string}
-               */
-              Orgs: "OpenAI" | "Meta" | "Microsoft" | "Anthropic";
-              /** UseTools */
-              UseTools: {
-                /** Assistants */
-                assistants: components["schemas"]["ModelId"][];
-              };
-            };
-          };
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Privacy Policy */
-  get_privacy_policy_api_v1_widgets_settings_privacy_policy__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PrivacyPolicy"];
-        };
-      };
-    };
-  };
-  /** Set Privacy Policy */
-  set_privacy_policy_api_v1_widgets_settings_privacy_policy__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["PrivacyPolicy"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PrivacyPolicy"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get All Users */
-  get_all_users_api_v1_sysadmin_users__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_UserInDB_"];
-        };
-      };
-    };
-  };
-  /** Register New User */
-  register_new_user_api_v1_sysadmin_users__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserAddSuperAdmin"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserCreated"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get User */
-  get_user_api_v1_sysadmin_users__user_id___get: {
-    parameters: {
-      path: {
-        user_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserInDB"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Update User
-   * @description Omitted fields are not updated.
-   */
-  update_user_api_v1_sysadmin_users__user_id___post: {
-    parameters: {
-      path: {
-        user_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserUpdatePublic"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserInDB"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete User */
-  delete_user_api_v1_sysadmin_users__user_id___delete: {
-    parameters: {
-      path: {
-        user_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DeleteResponse"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Tenants */
-  get_tenants_api_v1_sysadmin_tenants__get: {
-    parameters: {
-      query?: {
-        domain?: string | null;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_TenantInDB_"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Create Tenant */
-  create_tenant_api_v1_sysadmin_tenants__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TenantBase"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TenantInDB"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update Tenant */
-  update_tenant_api_v1_sysadmin_tenants__id___post: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TenantUpdatePublic"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TenantInDB"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Tenant By Id */
-  delete_tenant_by_id_api_v1_sysadmin_tenants__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TenantInDB"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Predefined Roles */
-  get_predefined_roles_api_v1_sysadmin_predefined_roles__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Crawl All Weekly Websites */
-  crawl_all_weekly_websites_api_v1_sysadmin_crawl_all_weekly_websites__post: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Get Embedding Models */
-  get_embedding_models_api_v1_sysadmin_embedding_models__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_EmbeddingModel_"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Get Completion Models */
-  get_completion_models_api_v1_sysadmin_completion_models__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_CompletionModelPublic_"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Enable Completion Model */
-  enable_completion_model_api_v1_sysadmin_tenants__id__completion_models__completion_model_id___post: {
-    parameters: {
-      path: {
-        id: string;
-        completion_model_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CompletionModelUpdateFlags"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["CompletionModelPublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Enable Embedding Model */
-  enable_embedding_model_api_v1_sysadmin_tenants__id__embedding_models__embedding_model_id___post: {
-    parameters: {
-      path: {
-        id: string;
-        embedding_model_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["EmbeddingModelUpdateFlags"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EmbeddingModelPublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Create Space And Import */
-  create_space_and_import_api_v1_sysadmin_spaces_import__post: {
-    parameters: {
-      query: {
-        user_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateAndImportSpaceRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Migrate To Spaces */
-  migrate_to_spaces_api_v1_sysadmin_migrations_migrate_to_spaces__post: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-    };
-  };
-  /** Get Origins */
-  get_origins_api_v1_sysadmin_allowed_origins__get: {
-    parameters: {
-      query?: {
-        tenant_id?: string | null;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_AllowedOriginInDB_"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Add Origin */
-  add_origin_api_v1_sysadmin_allowed_origins__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AllowedOriginCreate"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AllowedOriginInDB"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Origin */
-  delete_origin_api_v1_sysadmin_allowed_origins__id___delete: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Modules */
-  get_modules_api_v1_modules__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedResponse_ModuleInDB_"];
-        };
-      };
-    };
-  };
-  /** Add Module */
-  add_module_api_v1_modules__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ModuleBase"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ModuleInDB"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Add Module To Tenant
-   * @description Value is a list of module `id`'s to add to the `tenant_id`.
-   */
-  add_module_to_tenant_api_v1_modules__tenant_id___post: {
-    parameters: {
-      path: {
-        tenant_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ModelId"][];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TenantInDB"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Permissions */
-  get_permissions_api_v1_roles_permissions__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PermissionPublic"][];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-    };
-  };
-  /** Get Roles */
-  get_roles_api_v1_roles__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolesPaginatedResponse"];
-        };
-      };
-    };
-  };
-  /** Create Role */
-  create_role_api_v1_roles__post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RoleCreateRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolePublic"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get Role By Id */
-  get_role_by_id_api_v1_roles__role_id___get: {
-    parameters: {
-      path: {
-        role_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolePublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Update Role */
-  update_role_api_v1_roles__role_id___post: {
-    parameters: {
-      path: {
-        role_id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RoleUpdateRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolePublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Role By Id */
-  delete_role_by_id_api_v1_roles__role_id___delete: {
-    parameters: {
-      path: {
-        role_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RolePublic"];
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "application/json": components["schemas"]["GeneralError"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+          "application/json": components["schemas"]["UserIntegrationList"];
         };
       };
     };

@@ -9,9 +9,11 @@ export const load = async (event) => {
 
   event.depends("admin:models:load");
 
+  const securityLevels = await intric.securityLevels.getSecurityLevels();
   const models = await intric.models.list();
 
   return {
-    models
+    models,
+    securityLevels
   };
 };

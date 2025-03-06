@@ -22,7 +22,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"svelte.svelte-vscode"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",

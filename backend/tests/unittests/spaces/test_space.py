@@ -1,11 +1,32 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 from uuid import uuid4
+from functools import wraps
 
 import pytest
 
+from intric.main.config import SETTINGS
 from intric.main.exceptions import BadRequestException, UnauthorizedException
+from intric.modules.module import Modules
+from intric.roles.permissions import Permission
 from intric.spaces.space import UNAUTHORIZED_EXCEPTION_MESSAGE, Space, SpaceRoleValue
+
+
+def only_intric_proprietary(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not SETTINGS.using_intric_proprietary:
+            pytest.skip("Test skipped when not using intric proprietary")
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+@pytest.fixture(autouse=True)
+def restore_intric_proprietary_setting():
+    original_value = SETTINGS.using_intric_proprietary
+    yield
+    SETTINGS.using_intric_proprietary = original_value
 
 
 @pytest.fixture

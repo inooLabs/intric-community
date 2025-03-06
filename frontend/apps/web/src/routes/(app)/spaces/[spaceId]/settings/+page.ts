@@ -8,6 +8,10 @@ export const load = async (event) => {
   const { intric } = await event.parent();
 
   const models = await intric.models.list();
+  const securityLevels = await intric.securityLevels.getSecurityLevels();
 
-  return models;
+  return {
+    ...models,
+    securityLevels
+  };
 };

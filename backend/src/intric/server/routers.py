@@ -40,6 +40,7 @@ from intric.user_groups.user_groups_router import router as user_groups_router
 from intric.users.user_router import router as users_router
 from intric.websites.website_router import router as website_router
 from intric.integration.presentation.integration_router import router as integration_router
+from intric.securitylevels.api.security_level_router import router as security_level_router
 
 router = APIRouter()
 
@@ -55,6 +56,7 @@ router.include_router(services_router, prefix="/services", tags=["services"])
 router.include_router(logging_router, prefix="/logging", tags=["logging"])
 router.include_router(analysis_router, prefix="/analysis", tags=["analysis"])
 router.include_router(admin_router, prefix="/admin", tags=["admin"])
+router.include_router(security_level_router, prefix="/security-levels", tags=["security-levels"])
 router.include_router(jobs_router, prefix="/jobs", tags=["jobs"])
 router.include_router(user_groups_router, prefix="/user-groups", tags=["user-groups"])
 router.include_router(

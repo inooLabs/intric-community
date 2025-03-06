@@ -8,7 +8,7 @@ from intric.database.tables.ai_models_table import CompletionModels, EmbeddingMo
 from intric.database.tables.base_class import BaseCrossReference, BasePublic
 from intric.database.tables.tenant_table import Tenants
 from intric.database.tables.users_table import Users
-
+from intric.database.tables.security_levels_table import SecurityLevels
 if TYPE_CHECKING:
     from intric.database.tables.app_table import Apps
     from intric.database.tables.assistant_table import Assistants
@@ -26,8 +26,12 @@ class Spaces(BasePublic):
     user_id: Mapped[Optional[UUID]] = mapped_column(
         ForeignKey(Users.id, ondelete="CASCADE"), unique=True
     )
+    security_level_id: Mapped[Optional[UUID]] = mapped_column(
+        ForeignKey(SecurityLevels.id, ondelete="SET NULL")
+    )
 
     # Relationships
+    security_level: Mapped[Optional[SecurityLevels]] = relationship()
     embedding_models: Mapped[list[EmbeddingModels]] = relationship(
         secondary="spaces_embedding_models", order_by=EmbeddingModels.created_at
     )

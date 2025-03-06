@@ -1,4 +1,5 @@
 /** @typedef {import('../types/resources').Space} Space */
+/** @typedef {import('../types/schema').components['schemas']['SpaceUpdateDryRunResponse']} SpaceUpdateDryRunResponse */
 /** @typedef {import('../client/client').IntricError} IntricError */
 
 /**
@@ -101,6 +102,24 @@ export function initSpaces(client) {
       const { id } = space;
       const res = await client.fetch("/api/v1/spaces/{id}/", {
         method: "patch",
+        params: { path: { id } },
+        requestBody: { "application/json": update }
+      });
+      return res;
+    },
+
+    /**
+     * Dry run an update to a space to check what would change.
+     * @param {Object} params
+     * @param {{id: string}} params.space The space you want to test updating
+     * @param {import('../types/fetch').JSONRequestBody<"post", "/api/v1/spaces/{id}/update/dryrun/">} params.update - The parameters to test updating
+     * @returns {Promise<SpaceUpdateDryRunResponse>} The hypothetical updated space
+     * @throws {IntricError}
+     * */
+    updateDryrun: async ({ space, update }) => {
+      const { id } = space;
+      const res = await client.fetch("/api/v1/spaces/{id}/update/dryrun/", {
+        method: "post",
         params: { path: { id } },
         requestBody: { "application/json": update }
       });

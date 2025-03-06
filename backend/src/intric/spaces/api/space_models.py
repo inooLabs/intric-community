@@ -7,8 +7,13 @@ from pydantic import BaseModel, computed_field
 from intric.ai_models.completion_models.completion_model import (
     CompletionModelSparse,
     ModelKwargs,
+    CompletionModelPublic,
 )
-from intric.ai_models.embedding_models.embedding_model import EmbeddingModelSparse
+from intric.ai_models.embedding_models.embedding_model import (
+    EmbeddingModelSparse,
+    EmbeddingModelPublic,
+)
+
 from intric.assistants.api.assistant_models import AssistantSparse, DefaultAssistant
 from intric.groups.api.group_models import GroupMetadata, GroupPublicWithMetadata
 from intric.main.models import (
@@ -18,6 +23,7 @@ from intric.main.models import (
     ResourcePermissionsMixin,
     partial_model,
 )
+from intric.securitylevels.api.security_level_models import SecurityLevelSparse
 from intric.services.service import ServiceSparse
 from intric.users.user import UserSparse
 from intric.websites.crawl_dependencies.crawl_models import CrawlRunPublic, CrawlType
@@ -36,6 +42,7 @@ class SpaceRoleValue(str, Enum):
 
 class CreateRequest(BaseModel):
     name: str
+    security_level_id: Optional[UUID] = None
 
 
 class TransferRequest(BaseModel):
@@ -44,7 +51,6 @@ class TransferRequest(BaseModel):
 
 class TransferApplicationRequest(TransferRequest):
     move_resources: bool = False
-
 
 # Members
 
@@ -75,6 +81,7 @@ class CreateSpaceRequest(CreateRequest):
 class UpdateSpaceRequest(BaseModel):
     name: str
     description: str
+    security_level_id: Optional[UUID]
 
     embedding_models: list[ModelId]
     completion_models: list[ModelId]
@@ -95,6 +102,7 @@ class SpaceSparse(InDB, ResourcePermissionsMixin):
     name: str
     description: Optional[str]
     personal: bool
+    security_level: Optional[SecurityLevelSparse]
 
 
 class SpaceDashboard(SpaceSparse):
@@ -112,10 +120,10 @@ class SpaceRole(BaseModel):
 
 class SpacePublic(SpaceDashboard):
     embedding_models: list[EmbeddingModelSparse]
-
     completion_models: list[CompletionModelSparse]
     knowledge: Knowledge
     members: PaginatedPermissions[SpaceMember]
+    security_level: Optional[SecurityLevelSparse]
 
     default_assistant: DefaultAssistant
 
@@ -224,3 +232,17 @@ class AddSpaceMemberRequest(BaseModel):
 
 class UpdateSpaceMemberRequest(BaseModel):
     role: SpaceRoleValue
+
+
+
+class SpaceUpdateDryRunRequest(BaseModel):
+    """Request to analyze the impact of updating a space's properties."""
+    security_level_id: Optional[UUID]
+
+
+class SpaceUpdateDryRunResponse(BaseModel):
+    """Response containing the impact analysis of updating a space's properties."""
+    unavailable_completion_models: list[CompletionModelPublic]
+    unavailable_embedding_models: list[EmbeddingModelPublic]
+    current_security_level: Optional[SecurityLevelSparse]
+    new_security_level: Optional[SecurityLevelSparse]

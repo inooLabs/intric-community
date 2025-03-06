@@ -28,10 +28,12 @@ class CompletionModelFactory:
             is_org_enabled = False
             is_org_default = False
             updated_at = completion_model.updated_at
+            security_level_id = None
         else:
             is_org_enabled = completion_model_settings.is_org_enabled
             is_org_default = completion_model_settings.is_org_default
             updated_at = completion_model_settings.updated_at
+            security_level_id = completion_model_settings.security_level_id
 
         org = None if completion_model.org is None else ModelOrg(completion_model.org)
 
@@ -56,4 +58,5 @@ class CompletionModelFactory:
             deployment_name=completion_model.deployment_name,
             is_org_enabled=is_org_enabled,
             is_org_default=is_org_default,
+            security_level_id=security_level_id,
         )

@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from uuid import UUID
 
     from intric.users.user import UserInDB
+    from intric.securitylevels.api.security_level_models import SecurityLevelPublic
 
 
 class ModelFamily(str, Enum):
@@ -60,6 +61,7 @@ class CompletionModel:
         deployment_name: Optional[str],
         is_org_enabled: bool,
         is_org_default: bool,
+        security_level_id: Optional["UUID"] = None,
     ):
         self.user = user
         self.id = id
@@ -81,6 +83,7 @@ class CompletionModel:
         self.deployment_name = deployment_name
         self.is_org_enabled = is_org_enabled
         self.is_org_default = is_org_default
+        self.security_level_id = security_level_id
 
     @property
     def is_locked(self):

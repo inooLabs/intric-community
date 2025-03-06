@@ -1,4 +1,5 @@
 from uuid import UUID
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
@@ -25,14 +26,18 @@ class CompletionModelsRepository:
             session, CompletionModels, CompletionModel
         )
 
-    async def _get_model_settings(self, id: UUID, tenant_id: UUID):
+    async def _get_model_settings(
+        self, id: UUID, tenant_id: UUID
+    ) -> CompletionModelSettings | None:
         query = sa.select(CompletionModelSettings).where(
             CompletionModelSettings.tenant_id == tenant_id,
             CompletionModelSettings.completion_model_id == id,
         )
         return await self.session.scalar(query)
 
-    async def _get_models_settings_mapper(self, tenant_id: UUID):
+    async def _get_models_settings_mapper(
+        self, tenant_id: UUID
+    ) -> dict[UUID, CompletionModelSettings]:
         query = sa.select(CompletionModelSettings).where(
             CompletionModelSettings.tenant_id == tenant_id
         )
@@ -45,6 +50,7 @@ class CompletionModelsRepository:
         settings = await self._get_model_settings(id, tenant_id)
         if settings:
             model.is_org_enabled = settings.is_org_enabled
+            model.security_level_id = settings.security_level_id
         return model
 
     async def get_model_by_name(self, name: str) -> CompletionModel:
@@ -69,7 +75,9 @@ class CompletionModelsRepository:
             if settings:
                 query = (
                     sa.update(CompletionModelSettings)
-                    .values(is_org_enabled=is_org_enabled)
+                    .values(
+                        is_org_enabled=is_org_enabled,
+                    )
                     .where(
                         CompletionModelSettings.tenant_id == tenant_id,
                         CompletionModelSettings.completion_model_id
@@ -118,14 +126,17 @@ class CompletionModelsRepository:
         if id_list is not None:
             query = query.where(CompletionModels.id.in_(id_list))
 
-        models = await self.delegate.get_models_from_query(query)
+        models: list[CompletionModel] = await self.delegate.get_models_from_query(query)
 
-        if tenant_id is not None:
-            settings_mapper = await self._get_models_settings_mapper(tenant_id)
-
-            for model in models:
-                model.is_org_enabled = settings_mapper.get(model.id, False)
-
+        for model in models:
+            if tenant_id is not None:
+                model_settings = await self._get_model_settings(model.id, tenant_id)
+            model.is_org_enabled = (
+                model_settings.is_org_enabled if model_settings else False
+            )
+            model.security_level_id = (
+                model_settings.security_level_id if model_settings else None
+            )
         return models
 
     async def get_ids_and_names(self) -> list[(UUID, str)]:

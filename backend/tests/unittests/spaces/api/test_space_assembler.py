@@ -60,6 +60,7 @@ def space():
         user_id=None,
         tenant_id=TEST_UUID,
         description=None,
+        security_level=None,
         embedding_models=[],
         completion_models=[],
         assistants=[],

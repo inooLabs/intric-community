@@ -27,6 +27,8 @@ from intric.spaces.api.space_models import (
     SpaceSparse,
     UpdateSpaceMemberRequest,
     UpdateSpaceRequest,
+    SpaceUpdateDryRunRequest,
+    SpaceUpdateDryRunResponse,
 )
 
 router = APIRouter()
@@ -77,6 +79,7 @@ async def update_space(
     service = container.space_service()
     assembler = container.space_assembler()
 
+
     def _get_model_ids_or_none(models: list[ModelId] | None):
         if models is None:
             return None
@@ -89,6 +92,7 @@ async def update_space(
         description=update_space_req.description,
         embedding_model_ids=_get_model_ids_or_none(update_space_req.embedding_models),
         completion_model_ids=_get_model_ids_or_none(update_space_req.completion_models),
+        security_level_id=update_space_req.security_level_id,
     )
 
     return assembler.from_space_to_model(space)
@@ -330,9 +334,34 @@ async def remove_space_member(
 async def get_personal_space(
     container: Container = Depends(get_container(with_user=True)),
 ):
+
     service = container.space_init_service()
     assembler = container.space_assembler()
-
     space = await service.get_personal_space()
-
     return assembler.from_space_to_model(space)
+
+
+@router.post(
+    "/{id}/update/dryrun/",
+    response_model=SpaceUpdateDryRunResponse,
+    responses=responses.get_responses([404]),
+)
+async def update_space_dryrun(
+    id: UUID,
+    dryrun_request: SpaceUpdateDryRunRequest,
+    container: Container = Depends(get_container(with_user=True)),
+):
+    """
+    Analyze the impact of updating a space's properties without actually applying the changes.
+    Currently supports:
+    - Security level changes: Shows which models would be affected
+    """
+    service = container.space_service()
+    assembler = container.space_assembler()
+
+    analysis = await service.analyze_update(
+        id=id,
+        security_level_id=dryrun_request.security_level_id,
+    )
+
+    return assembler.from_space_analyze_update_to_response(analysis)

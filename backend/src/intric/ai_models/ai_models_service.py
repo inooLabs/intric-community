@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from intric.ai_models.completion_models.completion_model import (
@@ -6,6 +7,9 @@ from intric.ai_models.completion_models.completion_model import (
     CompletionModelPublic,
     ModelHostingLocation,
 )
+
+from intric.securitylevels.security_level_service import SecurityLevelService
+
 from intric.ai_models.completion_models.completion_models_repo import (
     CompletionModelsRepository,
 )
@@ -13,6 +17,7 @@ from intric.ai_models.embedding_models.embedding_model import (
     EmbeddingModel,
     EmbeddingModelPublic,
     EmbeddingModelUpdateFlags,
+    EmbeddingModelSecurityLevelUpdate,
 )
 from intric.ai_models.embedding_models.embedding_models_repo import (
     EmbeddingModelsRepository,
@@ -24,19 +29,20 @@ from intric.roles.permissions import Permission, validate_permissions
 from intric.tenants.tenant_repo import TenantRepository
 from intric.users.user import UserInDB
 
-
 class AIModelsService:
     def __init__(
         self,
         user: UserInDB,
         embedding_model_repo: EmbeddingModelsRepository,
         completion_model_repo: CompletionModelsRepository,
+        security_level_service: SecurityLevelService,
         tenant_repo: TenantRepository,
     ):
         self.user = user
         self.embedding_model_repo = embedding_model_repo
         self.completion_model_repo = completion_model_repo
         self.tenant_repo = tenant_repo
+        self.security_level_service = security_level_service
 
     def _is_locked(
         self,
@@ -88,7 +94,7 @@ class AIModelsService:
 
         return models
 
-    async def get_embedding_model(self, id: UUID):
+    async def get_embedding_model(self, id: UUID, include_non_accessible: bool = False):
         model = await self.embedding_model_repo.get_model(
             id, tenant_id=self.user.tenant_id
         )
@@ -99,15 +105,23 @@ class AIModelsService:
             )
 
         can_access = self._can_access(model)
-        if not can_access:
+        if not can_access and not include_non_accessible:
             raise UnauthorizedException(
                 "Unauthorized. User has no permissions to access."
+            )
+
+        if not model.security_level_id:
+            security_level = None
+        else:
+            security_level = await self.security_level_service.get_security_level(
+                model.security_level_id
             )
 
         return EmbeddingModelPublic(
             **model.model_dump(),
             is_locked=self._is_locked(model),
             can_access=can_access,
+            security_level=security_level,
         )
 
     async def get_latest_available_embedding_model(self):
@@ -132,11 +146,19 @@ class AIModelsService:
             ):
                 continue
 
+            if not model.security_level_id:
+                security_level = None
+            else:
+                security_level = await self.security_level_service.get_security_level(
+                    model.security_level_id
+                )
+
             models.append(
                 CompletionModelPublic(
                     **model.model_dump(),
                     is_locked=self._is_locked(model),
                     can_access=self._can_access(model),
+                    security_level=security_level,
                 )
             )
 
@@ -150,6 +172,7 @@ class AIModelsService:
             is_org_enabled=data.is_org_enabled,
             embedding_model_id=embedding_model_id,
             tenant_id=self.user.tenant_id,
+            security_level_id=data.security_level_id,
         )
 
         model = await self.embedding_model_repo.get_model(
