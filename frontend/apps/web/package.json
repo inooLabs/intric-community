@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --host 0.0.0.0",
-    "dev": "vite dev",
     "build": "NODE_ENV=production vite build",
     "build:all": "pnpm run --recursive --filter @intric/web... build",
     "preview": "vite preview",
