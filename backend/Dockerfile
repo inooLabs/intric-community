@@ -16,7 +16,9 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 COPY . /code/
 
+# Configure Poetry to install packages globally
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-ansi
+    && poetry config virtualenvs.in-project false \
+    && poetry install --no-interaction --no-ansi
 
 CMD ["sh", "-c", "./run.sh"]

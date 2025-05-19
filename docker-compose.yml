@@ -1,0 +1,205 @@
+# docker-compose.yml
+services:
+  frontend:
+    image: ${NEXUS_REGISTRY}/intric/frontend:${IMAGE_TAG:-latest}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - ORIGIN=http://${SERVICE_FQDN_FRONTEND:-example.com}
+      - INTRIC_BACKEND_URL=${INTRIC_BACKEND_URL:-http://backend:8000}
+      - INTRIC_PUBLIC_BACKEND_URL=${INTRIC_PUBLIC_BACKEND_URL:-http://localhost:8000}
+      - JWT_SECRET=${JWT_SECRET}
+      - MOBILITY_GUARD_AUTH=${MOBILITY_GUARD_AUTH:-}
+      - SHOW_TEMPLATES=${SHOW_TEMPLATES:-}
+      - FEEDBACK_FORM_URL=${FEEDBACK_FORM_URL:-}
+    restart: unless-stopped
+    networks:
+      - intric-network
+    depends_on:
+      backend:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  backend:
+    image: ${NEXUS_REGISTRY}/intric/backend:${IMAGE_TAG:-latest}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      # Infrastructure dependencies
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432} # Still needed for connection string
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT:-6379} # Still needed for connection string
+      # API keys and model URLs
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AZURE_API_KEY=${AZURE_API_KEY:-}
+      - AZURE_MODEL_DEPLOYMENT=${AZURE_MODEL_DEPLOYMENT:-}
+      - AZURE_ENDPOINT=${AZURE_ENDPOINT:-}
+      - AZURE_API_VERSION=${AZURE_API_VERSION:-}
+      # Authentication dependencies
+      - MOBILITYGUARD_DISCOVERY_ENDPOINT=${MOBILITYGUARD_DISCOVERY_ENDPOINT:-}
+      - MOBILITYGUARD_CLIENT_ID=${MOBILITYGUARD_CLIENT_ID:-}
+      - MOBILITYGUARD_CLIENT_SECRET=${MOBILITYGUARD_CLIENT_SECRET:-}
+      # Max sizes
+      - UPLOAD_FILE_TO_SESSION_MAX_SIZE=${UPLOAD_FILE_TO_SESSION_MAX_SIZE:-1048576}
+      - UPLOAD_IMAGE_TO_SESSION_MAX_SIZE=${UPLOAD_IMAGE_TO_SESSION_MAX_SIZE:-1048576}
+      - UPLOAD_MAX_FILE_SIZE=${UPLOAD_MAX_FILE_SIZE:-10485760}
+      - TRANSCRIPTION_MAX_FILE_SIZE=${TRANSCRIPTION_MAX_FILE_SIZE:-10485760}
+      - MAX_IN_QUESTION=${MAX_IN_QUESTION:-1}
+      # Feature flags
+      - USING_ACCESS_MANAGEMENT=${USING_ACCESS_MANAGEMENT:-False}
+      - USING_AZURE_MODELS=${USING_AZURE_MODELS:-False}
+      # Security
+      - API_PREFIX=${API_PREFIX:-/api/v1}
+      - API_KEY_LENGTH=${API_KEY_LENGTH:-64}
+      - API_KEY_HEADER_NAME=${API_KEY_HEADER_NAME:-example}
+      - JWT_AUDIENCE=${JWT_AUDIENCE:-*}
+      - JWT_ISSUER=${JWT_ISSUER:-EXAMPLE}
+      - JWT_EXPIRY_TIME=${JWT_EXPIRY_TIME:-86000}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_TOKEN_PREFIX=${JWT_TOKEN_PREFIX:-}
+      # Log
+      - LOGLEVEL=${LOGLEVEL:-INFO}
+      # Sentry
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
+    restart: unless-stopped
+    volumes:
+      - backend_data:/app/data
+    networks:
+      - intric-network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - intric-network
+
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - intric-network
+
+  # Database initialization service (only run with --profile init)
+  db-init:
+    image: ${NEXUS_REGISTRY}/intric/backend:${IMAGE_TAG:-latest}
+    # --- FIX: Changed command back to include alembic, but ensure environment is complete ---
+    # The init_db.py script likely calls alembic internally.
+    # If init_db.py *only* does alembic upgrade head, you could potentially use:
+    # command: ["alembic", "upgrade", "head"]
+    # But sticking with the original script entrypoint is safer if it does more.
+    command: ["python", "init_db.py"]
+    environment:
+      # --- FIX: Copied all environment variables from 'backend' service ---
+      # Infrastructure dependencies
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      # API keys and model URLs (May not be strictly needed by init_db, but harmless)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AZURE_API_KEY=${AZURE_API_KEY:-}
+      - AZURE_MODEL_DEPLOYMENT=${AZURE_MODEL_DEPLOYMENT:-}
+      - AZURE_ENDPOINT=${AZURE_ENDPOINT:-}
+      - AZURE_API_VERSION=${AZURE_API_VERSION:-}
+      # Authentication dependencies (May not be strictly needed by init_db, but harmless)
+      - MOBILITYGUARD_DISCOVERY_ENDPOINT=${MOBILITYGUARD_DISCOVERY_ENDPOINT:-}
+      - MOBILITYGUARD_CLIENT_ID=${MOBILITYGUARD_CLIENT_ID:-}
+      - MOBILITYGUARD_CLIENT_SECRET=${MOBILITYGUARD_CLIENT_SECRET:-}
+      # Max sizes (Needed by Settings)
+      - UPLOAD_FILE_TO_SESSION_MAX_SIZE=${UPLOAD_FILE_TO_SESSION_MAX_SIZE:-1048576}
+      - UPLOAD_IMAGE_TO_SESSION_MAX_SIZE=${UPLOAD_IMAGE_TO_SESSION_MAX_SIZE:-1048576}
+      - UPLOAD_MAX_FILE_SIZE=${UPLOAD_MAX_FILE_SIZE:-10485760}
+      - TRANSCRIPTION_MAX_FILE_SIZE=${TRANSCRIPTION_MAX_FILE_SIZE:-10485760}
+      - MAX_IN_QUESTION=${MAX_IN_QUESTION:-1}
+      # Feature flags (Needed by Settings)
+      - USING_ACCESS_MANAGEMENT=${USING_ACCESS_MANAGEMENT:-False}
+      - USING_AZURE_MODELS=${USING_AZURE_MODELS:-False}
+      # Security (Needed by Settings)
+      - API_PREFIX=${API_PREFIX:-/api/v1}
+      - API_KEY_LENGTH=${API_KEY_LENGTH:-64}
+      - API_KEY_HEADER_NAME=${API_KEY_HEADER_NAME:-example}
+      - JWT_AUDIENCE=${JWT_AUDIENCE:-*}
+      - JWT_ISSUER=${JWT_ISSUER:-EXAMPLE}
+      - JWT_EXPIRY_TIME=${JWT_EXPIRY_TIME:-86000}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - JWT_SECRET=${JWT_SECRET} # Already present, ensure it's set
+      - JWT_TOKEN_PREFIX=${JWT_TOKEN_PREFIX:-}
+      # Log
+      - LOGLEVEL=${LOGLEVEL:-INFO} # Already present
+      # Sentry
+      - SENTRY_DSN=${SENTRY_DSN:-} # Already present
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-init} # Keep specific env for init
+    networks:
+      - intric-network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - init
+
+networks:
+  intric-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_data:
+    driver: local

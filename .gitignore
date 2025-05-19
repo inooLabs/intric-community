@@ -17,5 +17,4 @@
 */**/.env
 
 # docker
-docker-compose.yml
 setup.sh
