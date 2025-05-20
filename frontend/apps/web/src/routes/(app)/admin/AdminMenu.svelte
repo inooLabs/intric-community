@@ -16,8 +16,13 @@
   // import { IconIntegrations } from "@intric/icons/integrations";
   import { IconUsage } from "@intric/icons/usage";
   import { IconKey } from "@intric/icons/key";
+  import { getAppContext } from "$lib/core/AppContext";
+  
   let currentRoute = "";
   $: currentRoute = $page.url.pathname;
+  
+  const { featureFlags } = getAppContext();
+  const isLegacy = featureFlags.showLegacy;
 
   function isSelected(url: string, currentRoute: string) {
     url = url.replaceAll("/admin", "");
@@ -67,28 +72,31 @@
     >
   </Navigation.Link>
   <div class="border-default my-2 border-b-[0.5px]"></div>
-  <Navigation.Link
-    href="/admin/legacy/users"
-    isActive={isSelected("/admin/legacy/users", currentRoute)}
-    icon={IconAssistant}
-    label="Users"
-  />
-  <Navigation.Link
-    href="/admin/legacy/user-groups"
-    isActive={isSelected("/admin/legacy/user-groups", currentRoute)}
-    icon={IconAssistants}
-    label="User groups"
-  />
-  <Navigation.Link
-    href="/admin/legacy/roles"
-    isActive={isSelected("/admin/legacy/roles", currentRoute)}
-    icon={IconThumb}
-    label="Roles"
-  />
-  <!-- <Navigation.Link
-    href="/admin/integrations"
-    isActive={isSelected("/admin/integrations", currentRoute)}
-    icon={IconIntegrations}
-    label="Integrations"
-  /> -->
+  {#if isLegacy}
+    <Navigation.Link
+      href="/admin/users"
+      isActive={isSelected("/admin/users", currentRoute)}
+      icon={IconAssistant}
+      label="Users"
+    />
+  {:else}
+    <Navigation.Link
+      href="/admin/legacy/users"
+      isActive={isSelected("/admin/legacy/users", currentRoute)}
+      icon={IconAssistant}
+      label="Users"
+    />
+    <Navigation.Link
+      href="/admin/öegacy/user-groups"
+      isActive={isSelected("/admin/legacy/user-groups", currentRoute)}
+      icon={IconAssistants}
+      label="User groups"
+    />
+    <Navigation.Link
+      href="/admin/legacy/roles"
+      isActive={isSelected("/admin/legacy/roles", currentRoute)}
+      icon={IconThumb}
+      label="Roles"
+    />
+  {/if}
 </Navigation.Menu>

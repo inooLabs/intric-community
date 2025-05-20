@@ -127,6 +127,7 @@ export function getFeatureFlags() {
   const showTemplates = getFlagFromEnv("SHOW_TEMPLATES", false);
   const showWebSearch = getFlagFromEnv("SHOW_WEB_SEARCH", false);
   const showHelpCenter = getFlagFromEnv("SHOW_HELP_CENTER", false);
+  const showLegacy = getFlagFromEnv("SHOW_LEGACY", true);
 
   // Auth
   const zitadelConfigured =
@@ -138,6 +139,7 @@ export function getFeatureFlags() {
     newAuth: useNewAuth,
     showTemplates,
     showWebSearch,
-    showHelpCenter
+    showHelpCenter,
+    showLegacy
   });
 }
