@@ -52,11 +52,12 @@
   }
 
   function watchChanges(currentKwArgs: ModelKwArgs) {
-    const behaviour = getBehaviour(currentKwArgs);
-
     if (isDisabled) {
-      return ($selected = { value: "default" });
+      $selected = { value: "default" };
+      return;
     }
+
+    const behaviour = getBehaviour(currentKwArgs);
 
     if ($selected?.value !== behaviour) {
       $selected = { value: behaviour };
