@@ -27,7 +27,7 @@
     "@sveltejs/adapter-auto": "^6.0.0",
     "@sveltejs/adapter-cloudflare": "^7.0.1",
     "@sveltejs/adapter-node": "^5.2.12",
-    "@sveltejs/adapter-vercel": "^5.7.0",
+    "@sveltejs/adapter-vercel": "^6.3.2",
     "@sveltejs/kit": "^2.20.5",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/vite": "^4.1.3",
