@@ -17,6 +17,7 @@ class CreateEmbeddingsService:
     def __init__(self):
         self._adapters = {
             ModelFamily.OPEN_AI: OpenAIEmbeddingAdapter,
+            ModelFamily.VLLM: OpenAIEmbeddingAdapter,
             ModelFamily.E5: E5Adapter,
         }
 

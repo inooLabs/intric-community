@@ -16,6 +16,7 @@ class EmbeddingModelFamily(str, Enum):
     OPEN_AI = "openai"
     MINI_LM = "mini_lm"
     E5 = "e5"
+    VLLM = "vllm"
 
 
 class EmbeddingModelBase(BaseModel):
@@ -30,6 +31,7 @@ class EmbeddingModelBase(BaseModel):
     hosting: ModelHostingLocation
     description: Optional[str] = None
     org: Optional[Orgs] = None
+    base_url: Optional[str] = None
 
 
 class EmbeddingModelCreate(EmbeddingModelBase):

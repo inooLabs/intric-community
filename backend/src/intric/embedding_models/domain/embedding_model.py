@@ -45,6 +45,7 @@ class EmbeddingModel(AIModel):
         max_input: int,
         dimensions: Optional[int],
         security_classification: Optional[SecurityClassification],
+        base_url: Optional[str] = None,
     ):
         super().__init__(
             user=user,
@@ -67,6 +68,7 @@ class EmbeddingModel(AIModel):
 
         self.max_input = max_input
         self.dimensions = dimensions
+        self.base_url = base_url
 
     @classmethod
     def to_domain(
@@ -103,6 +105,7 @@ class EmbeddingModel(AIModel):
             is_org_enabled=is_org_enabled,
             max_input=db_model.max_input,
             dimensions=db_model.dimensions,
+            base_url=db_model.base_url,
             security_classification=SecurityClassification.to_domain(
                 db_security_classification=security_classification
             ),
