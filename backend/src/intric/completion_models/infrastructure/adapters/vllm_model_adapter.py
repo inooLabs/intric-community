@@ -15,6 +15,7 @@ from intric.completion_models.infrastructure.adapters.openai_model_adapter impor
 from intric.logging.logging import LoggingDetails
 from intric.logging.logging_templates import LLAMA_TEMPLATE
 from intric.main.config import SETTINGS
+from intric.observability.langfuse_setup import create_async_openai_client
 
 JINJA_TEMPLATE = jinja2.Environment().from_string(LLAMA_TEMPLATE)
 
@@ -25,7 +26,7 @@ class VLMMModelAdapter(OpenAIModelAdapter):
         model: CompletionModel,
     ):
         self.model = model
-        self.client = AsyncOpenAI(
+        self.client = create_async_openai_client(
             api_key="EMPTY",
             base_url=model.base_url or SETTINGS.vllm_model_url,
             http_client=httpx.AsyncClient(verify=False),
