@@ -183,10 +183,67 @@ The worker processes background tasks (file ingestion, embedding). Start it sepa
 
 ```bash
 cd /workspace/backend
-poetry run arq intric.worker.worker.WorkerSettings
+poetry run arq src.intric.worker.arq.WorkerSettings
 ```
 
 The worker must be restarted whenever backend Python code changes, just like the backend itself.
+
+---
+
+## LLM observability with Langfuse
+
+The backend optionally traces all LLM interactions (chat completions and embeddings) to a [Langfuse](https://langfuse.com) instance. Tracing is inactive unless enabled with real keys.
+
+### Configuration
+
+Add to `backend/.env`:
+
+```env
+LANGFUSE_ENABLED=True
+LANGFUSE_HOST=https://your-langfuse-host
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+
+# Optional
+LANGFUSE_DEBUG=False
+LANGFUSE_ENVIRONMENT=local-development
+LANGFUSE_USER_ID=example-user
+```
+
+| Setting | Purpose |
+|---------|---------|
+| `LANGFUSE_ENABLED` | Master switch; when `False`, all Langfuse code is a no-op |
+| `LANGFUSE_HOST` | Base URL of your Langfuse instance |
+| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` | Project API keys (create them in the Langfuse UI under *Settings → API Keys*) |
+| `LANGFUSE_DEBUG` | Verbose SDK logging for troubleshooting |
+| `LANGFUSE_ENVIRONMENT` | Environment label shown in the Langfuse UI (e.g. `local-development`) |
+| `LANGFUSE_USER_ID` | User attribution attached to every traced LLM call |
+
+Restart the backend after changing these. The ARQ worker does not trace (only the API process does).
+
+### How it works
+
+- On startup, `init_langfuse()` (in `backend/src/intric/observability/langfuse_setup.py`) creates the global Langfuse client and switches all OpenAI-compatible adapters to traced client drop-ins.
+- Chat completions and embeddings against **any** provider — including local `vllm`-family models with a `base_url` — are exported to Langfuse as OpenTelemetry spans with prompts, completions, token usage, and latency.
+- When disabled, the factory returns plain `openai.AsyncOpenAI` clients — zero overhead, no SDK calls.
+
+### Self-signed certificates
+
+Homelab endpoints typically use internally-signed TLS certificates. The observability module handles this automatically:
+
+- **Non-tracing API requests** (auth check, media upload): custom `httpx.Client(verify=False)`
+- **OTEL span export**: the `OTLPSpanExporter` is patched to skip verification. Note that newer `opentelemetry-exporter-otlp-proto-http` versions pass `verify=True` explicitly on every POST (overriding the session), so the exporter instance's `certificate_file` is forced to `False`.
+
+### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `CERTIFICATE_VERIFY_FAILED` on `/api/public/otel/v1/traces` | Exporter TLS patch not applied (stale process) | Restart the backend; check the startup log for `export TLS verify disabled: True` |
+| `400 ... Event type not accepted` on ingestion | SDK v2.x against a Langfuse v3+ server (legacy ingestion endpoint) | Use `langfuse>=3` (traces go through the OTEL endpoint) |
+| `AttributeError: ... 'instrument_openai_client'` | Stale process running pre-v3 module code | Restart the affected process (worker must be restarted manually) |
+| Traces missing user/environment | `LANGFUSE_USER_ID` / `LANGFUSE_ENVIRONMENT` unset | Set them in `backend/.env` and restart |
+
+> **Note:** `backend/.env` is gitignored — never commit real API keys.
 
 ---
 
