@@ -16,6 +16,7 @@ from intric.files.file_models import File
 from intric.logging.logging import LoggingDetails
 from intric.main.config import get_settings
 from intric.main.logging import get_logger
+from intric.observability.langfuse_setup import create_async_openai_client
 
 logger = get_logger(__name__)
 
@@ -27,10 +28,12 @@ class OpenAIModelAdapter(CompletionModelAdapter):
     def __init__(
         self,
         model: CompletionModel,
-        client: AsyncOpenAI = AsyncOpenAI(api_key=get_settings().openai_api_key),
+        client: AsyncOpenAI = None,
     ):
         self.model = model
-        self.client = client
+        self.client = client or create_async_openai_client(
+            api_key=get_settings().openai_api_key or "no-key"
+        )
         self.extra_headers = None
 
     def _get_kwargs(self, kwargs: ModelKwargs | None):

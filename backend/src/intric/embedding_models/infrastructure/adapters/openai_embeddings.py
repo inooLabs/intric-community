@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+import httpx
 import openai
 from tenacity import (
     retry,
@@ -13,6 +14,7 @@ from intric.files.chunk_embedding_list import ChunkEmbeddingList
 from intric.main.config import get_settings
 from intric.main.exceptions import BadRequestException, OpenAIException
 from intric.main.logging import get_logger
+from intric.observability.langfuse_setup import create_async_openai_client
 
 if TYPE_CHECKING:
     from intric.embedding_models.domain.embedding_model import EmbeddingModel
@@ -23,12 +25,17 @@ logger = get_logger(__name__)
 
 
 class OpenAIEmbeddingAdapter(EmbeddingModelAdapter):
-    def __init__(
-        self,
-        model: "EmbeddingModel",
-        client=openai.AsyncOpenAI(api_key=get_settings().openai_api_key),
-    ):
-        self.client = client
+    def __init__(self, model: "EmbeddingModel"):
+        if model.base_url:
+            self.client = create_async_openai_client(
+                api_key="no-key",
+                base_url=model.base_url,
+                http_client=httpx.AsyncClient(verify=False),
+            )
+        else:
+            self.client = create_async_openai_client(
+                api_key=get_settings().openai_api_key or "no-key"
+            )
         super().__init__(model)
 
     async def get_embeddings(self, chunks: list["InfoBlobChunk"]) -> ChunkEmbeddingList:

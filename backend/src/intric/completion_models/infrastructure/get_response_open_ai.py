@@ -10,6 +10,7 @@ from tenacity import (
 from intric.ai_models.completion_models.completion_model import Completion, FunctionCall
 from intric.main.exceptions import BadRequestException, OpenAIException
 from intric.main.logging import get_logger
+from intric.observability.langfuse_setup import propagate_trace_attributes
 
 logger = get_logger(__name__)
 
@@ -21,6 +22,17 @@ logger = get_logger(__name__)
     reraise=True,
 )
 async def get_response(
+    client: AsyncOpenAI,
+    model_name: str,
+    messages: list,
+    model_kwargs: dict,
+    extra_headers: dict = None,
+):
+    with propagate_trace_attributes():
+        return await _get_response(client, model_name, messages, model_kwargs, extra_headers)
+
+
+async def _get_response(
     client: AsyncOpenAI,
     model_name: str,
     messages: list,
@@ -67,6 +79,21 @@ async def get_response(
     reraise=True,
 )
 async def get_response_streaming(
+    client: AsyncOpenAI,
+    model_name: str,
+    messages: list,
+    model_kwargs: dict,
+    tools: list[dict] = None,
+    extra_headers: dict = None,
+):
+    with propagate_trace_attributes():
+        async for response in _get_response_streaming(
+            client, model_name, messages, model_kwargs, tools, extra_headers
+        ):
+            yield response
+
+
+async def _get_response_streaming(
     client: AsyncOpenAI,
     model_name: str,
     messages: list,

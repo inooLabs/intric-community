@@ -96,6 +96,7 @@ class EmbeddingModels(BasePublic):
     hosting: Mapped[str] = mapped_column()
     description: Mapped[Optional[str]] = mapped_column()
     org: Mapped[Optional[str]] = mapped_column()
+    base_url: Mapped[Optional[str]] = mapped_column()
 
 
 class EmbeddingModelSettings(BaseCrossReference):

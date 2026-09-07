@@ -89,6 +89,15 @@ class Settings(BaseSettings):
     jwt_token_prefix: str
     url_signing_key: str
 
+    # Langfuse
+    langfuse_enabled: bool = False
+    langfuse_host: Optional[str] = "https://langfuse.lab.hvk"
+    langfuse_public_key: Optional[str] = None
+    langfuse_secret_key: Optional[str] = None
+    langfuse_debug: bool = False
+    langfuse_environment: Optional[str] = None
+    langfuse_user_id: Optional[str] = None
+
     # Dev
     testing: bool = False
     dev: bool = False

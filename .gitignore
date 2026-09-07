@@ -21,3 +21,4 @@ docker-compose.yml
 
 # venv
 .venv/
+.devcontainer/devcontainer-lock.json
