@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production FORCE_COLOR=1 pnpm run --recursive --filter @intric/web... build",
-    "dev": "NODE_ENV=development FORCE_COLOR=1 pnpm run --recursive --filter @intric/web --filter @intric/ui --parallel dev",
+    "dev": "NODE_ENV=development FORCE_COLOR=1 pnpm run --recursive --filter @intric/web --filter @intric/ui --parallel dev ",
     "lint": "FORCE_COLOR=1 pnpm run --recursive --parallel --no-bail lint",
     "check": "NODE_ENV=production FORCE_COLOR=1 pnpm run --recursive --parallel --no-bail check",
     "format": "FORCE_COLOR=1 pnpm run --recursive --parallel --no-bail format",
@@ -17,5 +17,10 @@
   "resolutions": {
     "cookie": "0.7.2",
     "esbuild": ">0.25.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "0.27.4"
+    }
   }
 }

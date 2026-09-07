@@ -270,6 +270,19 @@ completion_models:
     org: Google
     vision: false
 
+  - name: 'fast-small'
+    nickname: 'Fast Small (local)'
+    family: 'vllm'
+    token_limit: 8192
+    stability: 'experimental'
+    is_deprecated: false
+    hosting: 'usa'
+    description: Locally hosted vLLM model.
+    open_source: true
+    reasoning: false
+    vision: false
+    base_url: 'https://llm.lab.hvk/v1'
+
 
 embedding_models:
   
@@ -304,3 +317,14 @@ embedding_models:
     hf_link: 'https://huggingface.co/intfloat/multilingual-e5-large'
     description: Microsoft's open-source multilingual embedding model, matching the performance of OpenAI's embedding models while supporting multiple languages.
     org: Microsoft
+
+  - name: 'bge-m3-Q4_K_M.gguf'
+    family: 'vllm'
+    open_source: true
+    max_input: 8192
+    dimensions: 1024
+    is_deprecated: false
+    stability: 'experimental'
+    hosting: 'usa'
+    description: BGE-M3 quantized embedding model served locally via llama.cpp.
+    base_url: 'https://embed-frame.lab.hvk/v1'

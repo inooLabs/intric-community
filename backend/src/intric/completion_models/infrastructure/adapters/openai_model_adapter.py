@@ -27,10 +27,12 @@ class OpenAIModelAdapter(CompletionModelAdapter):
     def __init__(
         self,
         model: CompletionModel,
-        client: AsyncOpenAI = AsyncOpenAI(api_key=get_settings().openai_api_key),
+        client: AsyncOpenAI = None,
     ):
         self.model = model
-        self.client = client
+        self.client = client or AsyncOpenAI(
+            api_key=get_settings().openai_api_key or "no-key"
+        )
         self.extra_headers = None
 
     def _get_kwargs(self, kwargs: ModelKwargs | None):
