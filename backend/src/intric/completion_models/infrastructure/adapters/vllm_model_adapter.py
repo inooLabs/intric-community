@@ -1,5 +1,6 @@
 import json
 
+import httpx
 import jinja2
 from openai import AsyncOpenAI
 
@@ -25,9 +26,11 @@ class VLMMModelAdapter(OpenAIModelAdapter):
     ):
         self.model = model
         self.client = AsyncOpenAI(
-            api_key="EMPTY", base_url=model.base_url or SETTINGS.vllm_model_url
+            api_key="EMPTY",
+            base_url=model.base_url or SETTINGS.vllm_model_url,
+            http_client=httpx.AsyncClient(verify=False),
         )
-        self.extra_headers = {"X-API-Key": SETTINGS.vllm_api_key}
+        self.extra_headers = {"X-API-Key": SETTINGS.vllm_api_key} if SETTINGS.vllm_api_key else None
 
     def get_token_limit_of_model(self):
         return self.model.token_limit
